@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/styling.css" />
+    <link rel="stylesheet" type="text/css" href="../css/formatting.css" />
+    <style>
+        table {
+            width: 40em;
+            margin: 5em auto;
+        }
+
+        #addAppIdRow td,
+        .buttonCell {
+            text-align: center;
+        }
+
+        input, button {
+            width: 90%;
+        }
+        td {
+            padding: 3px;
+        }
+    </style>
+</head>
+<body>
+<header>Settings</header>
+
+
+<table id="appIds">
+    <caption>App Ids Listed In Dropdown</caption>
+    <thead>
+        <tr>
+            <th>App Id</th>
+            <th>Operation Button</th>
+        </tr>
+    </thead>
+    <tr id="addAppIdRow">
+        <td>
+            <input type="text" value="" id="addAppName" />
+        </td>
+        <td class="buttonCell">
+            <button id="addApp">Add GAE App Id</button>
+        </td>
+    </tr>
+</table>
+
+<table id="hiddenUris">
+    <caption>Hidden URIs</caption>
+    <thead>
+        <tr>
+            <th>URI</th>
+            <th>Date Hidden</th>
+        </tr>
+    </thead>
+</table>
+
+
+<script src="settings.js"></script>
+</body>
+</html>

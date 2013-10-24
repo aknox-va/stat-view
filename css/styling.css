@@ -1,0 +1,47 @@
+html {
+    background-color: #151e2b;
+    font-size: 14px;
+}
+
+header {
+    background-color: #698495;
+    border-bottom: #303d48 solid 0.2em;
+    color: #151e2b;
+    font-weight: bold;
+}
+
+table {
+    background-color: #c3d9b8;
+}
+
+table thead {
+    background-color: #65926c;
+    color: #151e2b;
+}
+
+table th {
+    border: #2f4834 solid 0.1em;
+}
+
+table td {
+    text-align: left;
+    border: #2f4834 solid 0.1em;
+    color: #000000;
+}
+
+table caption {
+    background-color: #2f4834;
+    border-radius: 1em 1em 0 0;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+table a {
+    color: #1a3a21;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+table a:hover {
+    color: #254e73;
+}
