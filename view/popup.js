@@ -20,10 +20,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Add event listener to button that will grab and display the data for that appId
                 appIdButton.addEventListener('click',
-                     function() {
-                         chrome.runtime.sendMessage({method: "runAnalysis", data: this.innerText});
-                         window.close();
-                     }
+                    function() {
+                        // Create the tab that will be used to show results (if it is already open, then reload it)
+                        var newTabUrl = "view/home.html?appId=" + this.innerText;
+                        chrome.tabs.getAllInWindow(null, function(tabs){
+                            // Close any existing tabs pointing to this url
+                            for (var i = 0; i < tabs.length; i++) {
+                                if (tabs[i].url.indexOf(newTabUrl) != -1) {
+                                    chrome.tabs.remove(tabs[i].id);
+                                }
+                            }
+
+                            // Create the data viewer tab
+                            chrome.tabs.create({active: true, url: newTabUrl});
+                        });
+                    }
                  );
             }
         }

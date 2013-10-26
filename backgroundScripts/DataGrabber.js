@@ -28,22 +28,8 @@ function request(appId) {
         getTabData(this, this.dataLocations[i]);
     }
 
-    // Create the tab that will be used to show results (if it is already open, then reload it)
-    var newTabUrl = "view/home.html?appId=" + appId;
-    chrome.tabs.getAllInWindow(null, function(tabs){
-        // Close any existing tabs pointing to this url
-        for (var i = 0; i < tabs.length; i++) {
-            if (tabs[i].url.indexOf(newTabUrl) != -1) {
-                chrome.tabs.remove(tabs[i].id);
-            }
-        }
-
-        // Create the tab and start trying to populate it
-        chrome.tabs.create({active: true, url: newTabUrl}, function () {
-            // Display any stats that have been found
-            setTimeout(checkForResults(self, 60),1000);
-        });
-    });
+    // Start trying to populate the view results tab with the processed data
+    setTimeout(checkForResults(self, 60),1000);
 }
 
 

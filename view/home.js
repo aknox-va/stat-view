@@ -5,9 +5,14 @@ var METHOD = "addData";
 var appId = "";
 var urlParam = document.location.href.split("?")[1].split("=");
 if (urlParam[0] == "appId") {
-    var header = document.getElementsByTagName("header")[0];
     appId = urlParam[1];
+
+    // Setup the page heading
+    var header = document.getElementsByTagName("header")[0];
     header.innerHTML = header.innerHTML + " : " + appId;
+
+    // Get the background tab to start trying to populate this tab
+    chrome.runtime.sendMessage({method: "runAnalysis", data: appId});
 
     // dashboard/stats return json so it can't be handled by the background script
     getImageFromJson("7 Day Error Details Chart", "https://appengine.google.com/dashboard/stats?type=4&window=7&app_id=s~" + appId);
