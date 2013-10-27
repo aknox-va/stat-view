@@ -1,34 +1,35 @@
 var METHOD = "addData";
-
-
-// Set the appId
 var appId = "";
-var urlParam = document.location.href.split("?")[1].split("=");
-if (urlParam[0] == "appId") {
-    appId = urlParam[1];
 
-    // Setup the page heading
-    var header = document.getElementsByTagName("header")[0];
-    header.innerHTML = header.innerHTML + " : " + appId;
 
-    // Get the background tab to start trying to populate this tab
-    chrome.runtime.sendMessage({method: "runAnalysis", data: appId});
+// Setup the page and spool up the data gathering
+window.onload = function() {
+    // Set the appId
+    var urlParam = document.location.href.split("?")[1].split("=");
+    if (urlParam[0] == "appId") {
+        appId = urlParam[1];
 
-    // dashboard/stats return json so it can't be handled by the background script
-    getImageFromJson("7 Day Error Details Chart", "https://appengine.google.com/dashboard/stats?type=4&window=7&app_id=s~" + appId);
-    getImageFromJson("7 Day Memory Usage Chart (MB)", "https://appengine.google.com/dashboard/stats?type=9&window=7&app_id=s~" + appId);
-}
+        // Setup the page heading
+        var header = document.getElementsByTagName("header")[0];
+        header.innerHTML = header.innerHTML + " : " + appId;
+
+        // Get the background tab to start trying to populate this tab
+        chrome.runtime.sendMessage({method: "runAnalysis", data: appId});
+
+        // dashboard/stats return json so it can't be handled by the background script
+        getImageFromJson("7 Day Error Details Chart", "https://appengine.google.com/dashboard/stats?type=4&window=7&app_id=s~" + appId);
+        getImageFromJson("7 Day Memory Usage Chart (MB)", "https://appengine.google.com/dashboard/stats?type=9&window=7&app_id=s~" + appId);
+    }
+};
 
 
 // Handler that adds a given table to the page if the data is for this appId
 chrome.runtime.onMessage.addListener(
     function(message, sender, sendResponse) {
         if(message.method == METHOD && message.appId == appId){
-            var newContent = document.createElement("table");
-            newContent.innerHTML = message.data;
-
-            var body = document.getElementsByTagName("body")[0];
-            body.appendChild(newContent);
+            var newContent = document.getElementById(message.getDataMethod);    // Find the table to put data in
+            removeElement(newContent.getElementsByTagName("caption")[0])        // Remove the table placeholder
+            newContent.innerHTML = message.data;                                // Put the new content in the table
 
             // adds the handlers for the buttons that hide rows and hide any rows the user doesn't want to see
             if(message.getDataMethod == "getDashboardErrors") {
@@ -42,7 +43,7 @@ chrome.runtime.onMessage.addListener(
                             for (var j = uriList.length; j-- > 0 && hid == false;) {
                                 // If the row is in the hide list then potentially hide it
                                 if (uriList[j].uri == buttons[i].value) {
-                                    // Remove the entry if the entry is older than a week
+                                    // Remove the entry if the entry is older than a week (604800000ms)
                                     if (new Date().getTime() - uriList[j].time > 604800000) {
                                         uriList.remove(j);
                                         // Update the storage
@@ -101,11 +102,11 @@ function getImageFromJson(name, url) {
     xhr.open("GET", url, true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
-            var newContent = document.createElement("table");
+            var newContent = document.getElementById(name);
             newContent.innerHTML = "<caption>" + name + "</caption><img src='" + JSON.parse(xhr.responseText).chart_url + "' />";
 
-            var body = document.getElementsByTagName("body")[0];
-            body.appendChild(newContent);
+            //var body = document.getElementsByTagName("body")[0];
+            //body.appendChild(newContent);
         }
     }
     xhr.send();
