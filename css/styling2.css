@@ -20,6 +20,10 @@ table thead {
     color: #eac4e9;
 }
 
+table thead.noData {
+    background-color: #2f0002;
+}
+
 table th {
     border: #b44472 solid 0.1em;
 }

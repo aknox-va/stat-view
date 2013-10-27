@@ -19,6 +19,11 @@ table thead {
     color: #151e2b;
 }
 
+table thead.noData {
+    background-color: #860002;
+    color: #000000;
+}
+
 table th {
     border: #2f4834 solid 0.1em;
 }
