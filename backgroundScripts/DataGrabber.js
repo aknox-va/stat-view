@@ -19,6 +19,7 @@ function request(appId) {
     this.dataLocations[this.dataLocations.length] = {method: "getCronJobs", url: "https://appengine.google.com/cron?app_id=s~" + this.appId};
     this.dataLocations[this.dataLocations.length] = {method: "getTaskQueues", url: "https://appengine.google.com/queues?app_id=s~" + this.appId};
     this.dataLocations[this.dataLocations.length] = {method: "getDashboardErrors", url: "https://appengine.google.com/dashboard?app_id=s~" + this.appId};
+    this.dataLocations[this.dataLocations.length] = {method: "getLogData", url: "https://appengine.google.com/logs?app_id=s~" + this.appId + "&severity_level_override=0&severity_level=3&limit=200"};
 
     // When this variable is zero, then processing will complete (unless timeout is hit first)
     this.pagesNotYetParsed = this.dataLocations.length;

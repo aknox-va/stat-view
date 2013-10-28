@@ -39,6 +39,10 @@
       {
           "matches": ["https://appengine.google.com/dashboard?*"],
           "js": ["injectedScripts/Dashboard.js"]
+      },
+      {
+          "matches": ["https://appengine.google.com/logs?*"],
+          "js": ["injectedScripts/LogData.js"]
       }
   ],
   "manifest_version": 2
