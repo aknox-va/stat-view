@@ -2,6 +2,7 @@
 chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
     if (message.method == "runAnalysis") {
         new request(message.data);
+        //getPageBody("http://www.xkcd.com/");
     }
 });
 
@@ -76,4 +77,17 @@ function getTabData(self, page) {
             }
         });
     });
+}
+
+
+// get an html object from a url
+function getPageBody(url) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            alert(xhr.response);
+        }
+    }
+    xhr.send();
 }
