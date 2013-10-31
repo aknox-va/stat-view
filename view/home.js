@@ -310,7 +310,7 @@ function parseDashboardErrors(doc) {
 function parseLogData(doc) {
     // Set Table Parameters
     var id = 'getLogData';
-    var caption = "Stuck Task Queues";
+    var caption = "Error Logs";
 
     // Get the expanded log entries
     var entries = doc.getElementsByClassName("ae-log");
