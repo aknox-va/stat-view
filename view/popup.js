@@ -40,11 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Make it so that the buttons in the popup will set the appropriate urls, then get the cookies from them
-    var buttons = document.querySelectorAll('.appId')
-    for (var i = buttons.length; i-- > 0;) {
-
-    }
 
     // Add a listener for the settings button
     document.getElementById("settings").addEventListener('click',

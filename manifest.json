@@ -15,35 +15,5 @@
       "default_icon": "graphics/bar-icon.png",
       "default_popup": "view/popup.html"
   },
-  "background": {
-      "scripts": ["backgroundScripts/DataGrabber.js"],
-      "persistent": true
-  },
-  "content_scripts": [
-      {
-          "matches": ["http://*.xkcd.com/"],
-          "js": ["injectedScripts/Xkcd.js"]
-      },
-      {
-          "matches": ["https://*.appspot.com/_ah/datastore_admin/*"],
-          "js": ["injectedScripts/DatastoreAdmin.js"]
-      },
-      {
-          "matches": ["https://appengine.google.com/cron?*"],
-          "js": ["injectedScripts/CronJobs.js"]
-      },
-      {
-          "matches": ["https://appengine.google.com/queues?*"],
-          "js": ["injectedScripts/TaskQueues.js"]
-      },
-      {
-          "matches": ["https://appengine.google.com/dashboard?*"],
-          "js": ["injectedScripts/Dashboard.js"]
-      },
-      {
-          "matches": ["https://appengine.google.com/logs?*"],
-          "js": ["injectedScripts/LogData.js"]
-      }
-  ],
   "manifest_version": 2
 }
