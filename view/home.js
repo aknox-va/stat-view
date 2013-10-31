@@ -78,7 +78,7 @@ function insertData(id, data, callback) {
     var newContent = document.getElementById(id);    // Find the table to put data in
     removeElement(newContent.getElementsByTagName("caption")[0])        // Remove the table placeholder
     newContent.innerHTML = data;
-    callback();
+    if (callback){callback();}
 }
 
 
