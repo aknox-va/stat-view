@@ -34,6 +34,21 @@ table td {
     color: #000000;
 }
 
+table tr.error500 {
+    background-color: #d9b5a3;
+    color: #260002;
+}
+
+table tr.error500-frequent {
+    background-color: #ac6f65;
+    color: #260002;
+}
+
+table tr.error500-overload {
+    background-color: #ae433a;
+    color: #260002;
+}
+
 table caption {
     background-color: #2f4834;
     border-radius: 1em 1em 0 0;

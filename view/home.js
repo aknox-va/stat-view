@@ -44,7 +44,7 @@ window.onload = function() {
                     // Add the empty display table to the display window
                     var newTable = document.createElement("table");
                     newTable.setAttribute('id', parserId);
-                    newTable.innerHTML = "<caption><a href='" + parserUrl + "' target='_BLANK'>" + parserCaption + "</a></caption><thead class='noData'><tr><th>No data available yet</th></tr></thead>";
+                    newTable.innerHTML = "<caption><a href='" + parserUrl + "' target='_BLANK'>" + parserCaption + "</a></caption><thead class='noData'><tr><th>No data available yet. Click heading for manual check</th></tr></thead>";
                     document.getElementsByTagName("body")[0].appendChild(newTable);
 
                     // get DOM from the url and process it
@@ -378,26 +378,112 @@ function parseLogData(doc) {
     // Run through each log entry and group them
     var numEntries = entries.length;
     var parsedData = "";
-    var uniqueUris = {};
+    var errors500 = {};
+    var errors400 = {};
+    var errorsOther = {};
     for (var i = 0; i < numEntries; i++) {
         var spans = entries[i].getElementsByTagName("span");
         var date = spans[0].innerHTML;
         var uri = spans[1].innerHTML;
         var errorNum = spans[2].innerHTML;
 
-        if (uri in uniqueUris) {
-            uniqueUris[uri].count += 1;
-            if (new Date(date) > new Date(uniqueUris[uri].date)) {
-                uniqueUris[uri].date = date;
+        if (errorNum.charAt(0) == "5") {
+            if (uri in errors500) {
+                errors500[uri].count += 1;
+                if (new Date(date) > new Date(errors500[uri].date)) {
+                    errors500[uri].date = date;
+                }
+            } else {
+                errors500[uri] = {errorNum:errorNum, date:date, count:1}
+            }
+        } else if (errorNum.charAt(0) == "4") {
+            if (uri in errors400) {
+                errors400[uri].count += 1;
+                if (new Date(date) > new Date(errors400[uri].date)) {
+                    errors400[uri].date = date;
+                }
+            } else {
+                errors400[uri] = {errorNum:errorNum, date:date, count:1}
             }
         } else {
-            uniqueUris[uri] = {errorNum:errorNum, date:date, count:1}
+            if (uri in errorsOther) {
+                errorsOther[uri].count += 1;
+                if (new Date(date) > new Date(errorsOther[uri].date)) {
+                    errorsOther[uri].date = date;
+                }
+            } else {
+                errorsOther[uri] = {errorNum:errorNum, date:date, count:1}
+            }
         }
     }
 
     // Build the response
-    for (var uri in uniqueUris) {
-        parsedData += "<tr><td><a href='https://appengine.google.com/logs?filter_type=regex&severity_level_override=1&view=search&app_id=" + appId + "&filter=" + uri + "' target='_BLANK'>" + uri + "</a></td><td>" + uniqueUris[uri].errorNum + "</td><td>" + uniqueUris[uri].date + "</td><td>" + uniqueUris[uri].count + "</td></tr>"
+    var parsedData = "";
+
+    // Add the 500 errors to the parsed data in order of date
+    while (1) {
+        var newestErrorUri = null;
+        for (var uri in errors500) {
+            if (newestErrorUri) {
+                if (errors500[newestErrorUri] < errors500[uri]) {
+                    newestErrorUri = uri;
+                }
+            } else {
+                newestErrorUri = uri;
+            }
+        }
+        if (errors500.hasOwnProperty(newestErrorUri)) {
+            var cssClass = "error500";
+            if (errors500[newestErrorUri].count >= 10) {
+                cssClass = "error500-frequent"
+            } else if (errors500[newestErrorUri].count >= 100) {
+                cssClass = "error500-overload"
+            }
+            parsedData += "<tr class='" + cssClass + "'><td><a href='https://appengine.google.com/logs?filter_type=regex&severity_level_override=1&view=search&app_id=" + appId + "&filter=" + newestErrorUri + "' target='_BLANK'>" + newestErrorUri + "</a></td><td>" + errors500[newestErrorUri].errorNum + "</td><td>" + errors500[newestErrorUri].date + "</td><td>" + errors500[newestErrorUri].count + "</td></tr>";
+            delete errors500[newestErrorUri];
+        } else {
+            break;
+        }
+    }
+
+    // Add the 400 errors to the parsed data in order of date
+    while (1) {
+        var newestErrorUri = null;
+        for (var uri in errors400) {
+            if (newestErrorUri) {
+                if (errors400[newestErrorUri] < errors400[uri]) {
+                    newestErrorUri = uri;
+                }
+            } else {
+                newestErrorUri = uri;
+            }
+        }
+        if (errors400.hasOwnProperty(newestErrorUri)) {
+            parsedData += "<tr class='error400'><td><a href='https://appengine.google.com/logs?filter_type=regex&severity_level_override=1&view=search&app_id=" + appId + "&filter=" + newestErrorUri + "' target='_BLANK'>" + newestErrorUri + "</a></td><td>" + errors400[newestErrorUri].errorNum + "</td><td>" + errors400[newestErrorUri].date + "</td><td>" + errors400[newestErrorUri].count + "</td></tr>";
+            delete errors400[newestErrorUri];
+        } else {
+            break;
+        }
+    }
+
+    // Add the other errors to the parsed data in order of date
+    while (1) {
+        var newestErrorUri = null;
+        for (var uri in errorsOther) {
+            if (newestErrorUri) {
+                if (errorsOther[newestErrorUri] < errorsOther[uri]) {
+                    newestErrorUri = uri;
+                }
+            } else {
+                newestErrorUri = uri;
+            }
+        }
+        if (errorsOther.hasOwnProperty(newestErrorUri)) {
+            parsedData += "<tr class='errorOther'><td><a href='https://appengine.google.com/logs?filter_type=regex&severity_level_override=1&view=search&app_id=" + appId + "&filter=" + newestErrorUri + "' target='_BLANK'>" + newestErrorUri + "</a></td><td>" + errorsOther[newestErrorUri].errorNum + "</td><td>" + errorsOther[newestErrorUri].date + "</td><td>" + errorsOther[newestErrorUri].count + "</td></tr>";
+            delete errorsOther[newestErrorUri];
+        } else {
+            break;
+        }
     }
     var tableHead = "<thead></tr><th>URI</th><th>Code</th><th>NewestDate</th><th>#Occurrences</th><tr></thead>";
 
