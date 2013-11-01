@@ -29,6 +29,11 @@ table th {
     text-align: center;
 }
 
+table td {
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
 table caption {
     padding: 0.4em;
     text-align: center;
