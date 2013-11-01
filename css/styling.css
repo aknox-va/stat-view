@@ -41,6 +41,14 @@ table caption {
     font-weight: bold;
 }
 
+table caption a {
+    color: #FFFFFF;
+}
+
+table caption a:hover {
+    color: #65926c;
+}
+
 table a {
     color: #1a3a21;
     font-weight: bold;

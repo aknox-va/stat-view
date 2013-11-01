@@ -24,19 +24,29 @@ window.onload = function() {
 
         // Remove any sources the settings say the user doesn't want and parse the ones they do want
         chrome.storage.local.get('generalSettings', function(result) {
-            var generalSettings = result.generalSettings;
+            var generalSettings = {};
+            if (result && result.generalSettings) {
+                generalSettings = result.generalSettings;
+            }
             // Remove unwanted urls
             for (var parserUrl in htmlParsers) {
                 var parserId = htmlParsers[parserUrl]();
+                var parserCaption = htmlParsers[parserUrl]('getCaption');
                 // User has turned off this source so don't grab data for it
                 if (generalSettings[parserId] == "OFF") {
                     // Remove the url from the list of urls to parse
                     delete htmlParsers[parserUrl];
                     // Remove the display table from the display window
-                    removeElement(document.getElementById(parserId));
+                    //removeElement(document.getElementById(parserId));
                 }
                 // User has not turned off this source so grab data for it
                 else {
+                    // Add the empty display table to the display window
+                    var newTable = document.createElement("table");
+                    newTable.setAttribute('id', parserId);
+                    newTable.innerHTML = "<caption><a href='" + parserUrl + "' target='_BLANK'>" + parserCaption + "</a></caption><thead class='noData'><tr><th>No data available yet</th></tr></thead>";
+                    document.getElementsByTagName("body")[0].appendChild(newTable);
+
                     // get DOM from the url and process it
                     (function(url) {
                         var xhr = new XMLHttpRequest();
@@ -99,13 +109,15 @@ function parseXkcd(doc) {
     // No doc to parse so just return the parser id
     if (!doc) {
         return id;
+    } else if (doc == "getCaption") {
+        return caption;
     }
 
     // Get the xkcd image
     var result = doc.getElementById("comic").innerHTML;
 
     // Insert the parsed data into the viewing tab
-    insertData(id, "<caption>" + caption + "</caption>" + result);
+    insertData(id, "<caption><a href='" + doc.URL + "' target='_BLANK'>" + caption + "</a></caption>" + result);
 }
 
 
@@ -118,6 +130,8 @@ function parseDatastoreAdmin(doc) {
     // No doc to parse so just return the parser id
     if (!doc) {
         return id;
+    } else if (doc == "getCaption") {
+        return caption;
     }
 
     // Get the operations table
@@ -137,7 +151,7 @@ function parseDatastoreAdmin(doc) {
     var result = table.innerHTML;
 
     // Insert the parsed data into the viewing tab
-    insertData(id, "<caption>" + caption + "</caption>" + result);
+    insertData(id, "<caption><a href='" + doc.URL + "' target='_BLANK'>" + caption + "</a></caption>" + result);
 }
 
 
@@ -150,6 +164,8 @@ function parseCronJobs(doc) {
     // No doc to parse so just return the parser id
     if (!doc) {
         return id;
+    } else if (doc == "getCaption") {
+        return caption;
     }
 
     // Get the cron jobs table
@@ -172,7 +188,7 @@ function parseCronJobs(doc) {
     var result = table.innerHTML;
 
     // Insert the parsed data into the viewing tab
-    insertData(id, "<caption>" + caption + "</caption>" + result);
+    insertData(id, "<caption><a href='" + doc.URL + "' target='_BLANK'>" + caption + "</a></caption>" + result);
 }
 
 
@@ -185,11 +201,13 @@ function parseTaskQueues(doc) {
     // No doc to parse so just return the parser id
     if (!doc) {
         return id;
+    } else if (doc == "getCaption") {
+        return caption;
     }
 
     // Get the operations table
     var table = doc.getElementById("ae-tasks-queue-table");
-    table.getElementsByTagName("caption")[0].innerHTML = caption;
+    table.getElementsByTagName("caption")[0].innerHTML = "<a href='" + doc.URL + "' target='_BLANK'>" + caption + "</a>";
     var rows = table.getElementsByTagName("tr");
     var thColumns = rows[0].getElementsByTagName("th");
     removeElement(thColumns[1]);
@@ -233,17 +251,19 @@ function parseTaskQueues(doc) {
 function parseDashboardErrors(doc) {
     // Set Table Parameters
     var id = 'getDashboardErrors';
+    var caption = 'Dashboard Error List';
 
     // No doc to parse so just return the parser id
     if (!doc) {
         return id;
+    } else if (doc == "getCaption") {
+        return caption;
     }
 
     // Get the operations table
     var table = doc.getElementById("ae-dash-errors");
 
-    var caption = table.getElementsByTagName("caption")[0].getElementsByTagName("strong")[0];
-    caption.innerHTML = "Dashboard " + caption.innerHTML + " List";
+    table.getElementsByTagName("caption")[0].getElementsByTagName("strong")[0].innerHTML = "<a href='" + doc.URL + "' target='_BLANK'>" + caption + "</a>";
 
     // Remove the help icons
     var icons = table.getElementsByClassName("ae-help-icon");
@@ -348,6 +368,8 @@ function parseLogData(doc) {
     // No doc to parse so just return the parser id
     if (!doc) {
         return id;
+    } else if (doc == "getCaption") {
+        return caption;
     }
 
     // Get the expanded log entries
@@ -380,5 +402,5 @@ function parseLogData(doc) {
     var tableHead = "<thead></tr><th>URI</th><th>Code</th><th>NewestDate</th><th>#Occurrences</th><tr></thead>";
 
     // Insert the parsed data into the viewing tab
-    insertData(id, "<caption>" + caption + "</caption>" + tableHead + parsedData);
+    insertData(id, "<caption><a href='" + doc.URL + "' target='_BLANK'>" + caption + "</a></caption>" + tableHead + parsedData);
 }
