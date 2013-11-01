@@ -1,5 +1,5 @@
 var appId = "";
-var htmlUrls = new Array();
+var htmlParsers = new Array();
 
 
 // Setup the page and spool up the data gathering
@@ -13,44 +13,52 @@ window.onload = function() {
         var header = document.getElementsByTagName("header")[0];
         header.innerHTML = header.innerHTML + " : " + appId;
         
-        // Create the list of sources to grab data from
-        // todo: allow the user to edit this list in settings and pull it from storage
-        htmlUrls = {};
-        htmlUrls["http://www.xkcd.com"] = parseXkcd;
-        htmlUrls["https://ah-builtin-python-bundle-dot-" + appId + ".appspot.com/_ah/datastore_admin/?app_id=s~" + this.appId + "&adminconsolecustompage"] = parseDatastoreAdmin;
-        htmlUrls["https://appengine.google.com/cron?app_id=s~" + appId] = parseCronJobs;
-        htmlUrls["https://appengine.google.com/queues?app_id=s~" + appId] = parseTaskQueues;
-        htmlUrls["https://appengine.google.com/dashboard?app_id=s~" + appId] = parseDashboardErrors;
-        htmlUrls["https://appengine.google.com/logs?app_id=s~" + appId + "&severity_level_override=0&severity_level=3&limit=200"] = parseLogData;
+        // Create the list of all possible sources to grab data from
+        htmlParsers = {};
+        htmlParsers["http://www.xkcd.com"] = parseXkcd;
+        htmlParsers["https://ah-builtin-python-bundle-dot-" + appId + ".appspot.com/_ah/datastore_admin/?app_id=s~" + this.appId + "&adminconsolecustompage"] = parseDatastoreAdmin;
+        htmlParsers["https://appengine.google.com/cron?app_id=s~" + appId] = parseCronJobs;
+        htmlParsers["https://appengine.google.com/queues?app_id=s~" + appId] = parseTaskQueues;
+        htmlParsers["https://appengine.google.com/dashboard?app_id=s~" + appId] = parseDashboardErrors;
+        htmlParsers["https://appengine.google.com/logs?app_id=s~" + appId + "&severity_level_override=0&severity_level=3&limit=200"] = parseLogData;
 
-        // Process each url
-        for (var entry in htmlUrls) {
-            // get DOM from the url and process it
-            (function(entry, parseMethod) {
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", entry, true);
-                xhr.onload = function(){htmlUrls[entry](this.response)};
-                xhr.responseType = "document";
-                xhr.send();
-            })(entry, htmlUrls[entry]);
-        }
+        // Remove any sources the settings say the user doesn't want and parse the ones they do want
+        chrome.storage.local.get('generalSettings', function(result) {
+            var generalSettings = result.generalSettings;
+            // Remove unwanted urls
+            for (var parserUrl in htmlParsers) {
+                var parserId = htmlParsers[parserUrl]();
+                // User has turned off this source so don't grab data for it
+                if (generalSettings[parserId] == "OFF") {
+                    // Remove the url from the list of urls to parse
+                    delete htmlParsers[parserUrl];
+                    // Remove the display table from the display window
+                    removeElement(document.getElementById(parserId));
+                }
+                // User has not turned off this source so grab data for it
+                else {
+                    // get DOM from the url and process it
+                    (function(url) {
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("GET", url, true);
+                        xhr.onload = function(){htmlParsers[url](this.response)};
+                        xhr.responseType = "document";
+                        xhr.send();
+                    })(parserUrl);
+                }
+            }
+
+            // Process each url
+            for (var entry in htmlParsers) {
+
+            }
+        });
 
         // dashboard/stats return json so it needs to be handled differently
         getImageFromJson("7 Day Error Details Chart", "https://appengine.google.com/dashboard/stats?type=4&window=7&app_id=s~" + appId);
         getImageFromJson("7 Day Memory Usage Chart (MB)", "https://appengine.google.com/dashboard/stats?type=9&window=7&app_id=s~" + appId);
     }
 };
-
-
-// Handler that adds a given table to the page if the data is for this appId
-function parseHtml(name, doc) {
-                         // Put the new content in the table
-/*
-    // adds the handlers for the buttons that hide rows and hide any rows the user doesn't want to see
-    if(message.getDataMethod == "getDashboardErrors") {
-
-    }*/
-}
 
 
 // removes the given element from the page
@@ -73,10 +81,10 @@ function getImageFromJson(name, url) {
 }
 
 
-//
+// put the given parsed data into the data with the label id
 function insertData(id, data, callback) {
-    var newContent = document.getElementById(id);    // Find the table to put data in
-    removeElement(newContent.getElementsByTagName("caption")[0])        // Remove the table placeholder
+    var newContent = document.getElementById(id);                   // Find the table to put data in
+    removeElement(newContent.getElementsByTagName("caption")[0]);   // Remove the table placeholder
     newContent.innerHTML = data;
     if (callback){callback();}
 }
@@ -87,6 +95,11 @@ function parseXkcd(doc) {
     // Set Table Parameters
     var id = 'getXkcd';
     var caption = "Today's XKCD Comic";
+
+    // No doc to parse so just return the parser id
+    if (!doc) {
+        return id;
+    }
 
     // Get the xkcd image
     var result = doc.getElementById("comic").innerHTML;
@@ -101,6 +114,11 @@ function parseDatastoreAdmin(doc) {
     // Set Table Parameters
     var id = 'getDatastoreAdmin';
     var caption = "Datastore Admin - Completed Operation Errors";
+
+    // No doc to parse so just return the parser id
+    if (!doc) {
+        return id;
+    }
 
     // Get the operations table
     var table = doc.getElementById("operations");
@@ -128,6 +146,11 @@ function parseCronJobs(doc) {
     // Set Table Parameters
     var id = 'getCronJobs';
     var caption = "Cron Jobs - Non-Ideal Runs";
+
+    // No doc to parse so just return the parser id
+    if (!doc) {
+        return id;
+    }
 
     // Get the cron jobs table
     // todo:may have to eventually account for multiple pages
@@ -158,6 +181,11 @@ function parseTaskQueues(doc) {
     // Set Table Parameters
     var id = 'getTaskQueues';
     var caption = "Stuck Task Queues";
+
+    // No doc to parse so just return the parser id
+    if (!doc) {
+        return id;
+    }
 
     // Get the operations table
     var table = doc.getElementById("ae-tasks-queue-table");
@@ -205,6 +233,11 @@ function parseTaskQueues(doc) {
 function parseDashboardErrors(doc) {
     // Set Table Parameters
     var id = 'getDashboardErrors';
+
+    // No doc to parse so just return the parser id
+    if (!doc) {
+        return id;
+    }
 
     // Get the operations table
     var table = doc.getElementById("ae-dash-errors");
@@ -311,6 +344,11 @@ function parseLogData(doc) {
     // Set Table Parameters
     var id = 'getLogData';
     var caption = "Error Logs";
+
+    // No doc to parse so just return the parser id
+    if (!doc) {
+        return id;
+    }
 
     // Get the expanded log entries
     var entries = doc.getElementsByClassName("ae-log");

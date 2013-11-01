@@ -36,6 +36,31 @@
         </tr>
     </thead>
     <tbody>
+        <!-- id needs to be set to the same id specified in the parsing object -->
+        <tr>
+            <td>Datastore Admin</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="getDatastoreAdmin"></button></td>
+        </tr>
+        <tr>
+            <td>Dashboard Errors</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="getDashboardErrors"></button></td>
+        </tr>
+        <tr>
+            <td>Error Logs</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="getLogData"></button></td>
+        </tr>
+        <tr>
+            <td>Task Queues</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="getTaskQueues"></button></td>
+        </tr>
+        <tr>
+            <td>Cron Jobs</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="getCronJobs"></button></td>
+        </tr>
+        <tr>
+            <td>XKCD</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="getXkcd"></button></td>
+        </tr>
         <!--
         <tr>
             <td>Theme</td>
@@ -46,20 +71,6 @@
                 </select>
             </td>
         </tr>
-        -->
-        <tr>
-            <td>Datastore Admin</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="displayDatastoreAdmin"></button></td>
-        </tr>
-        <tr>
-            <td>Dashboard Errors</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="displayDashboardErrors"></button></td>
-        </tr>
-        <tr>
-            <td>Error Logs</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="displayErrorLogs"></button></td>
-        </tr>
-        <!--
         <tr>
             <td>Error Logs Length</td>
             <td class="settingsValueCell">
@@ -76,11 +87,6 @@
                 </select>
             </td>
         </tr>
-        -->
-        <tr>
-            <td>Queues</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="displayQueues"></button></td>
-        </tr>
         <tr>
             <td>Paused Queues</td>
             <td class="settingsValueCell"><button class="generalSettings" id="displayPausedQueues"></button></td>
@@ -89,7 +95,6 @@
             <td>Disabled Queues</td>
             <td class="settingsValueCell"><button class="generalSettings" id="displayDisabledQueues"></button></td>
         </tr>
-        <!--
         <tr>
             <td># waiting tasks needed to show queue</td>
             <td class="settingsValueCell"><input type="text" /></td>
@@ -98,21 +103,11 @@
             <td># tasks run in last min needed to show queue</td>
             <td class="settingsValueCell"><input type="text" /></td>
         </tr>
-        -->
-        <tr>
-            <td>Cron Jobs</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="displayCronJobs"></button></td>
-        </tr>
-        <!--
         <tr>
             <td>Display On Time Successful Cron Jobs</td>
             <td class="settingsValueCell"><button class="generalSettings" id="displayOnTimeCronJobs"></button></td>
         </tr>
         -->
-        <tr>
-            <td>XKCD</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="displayXkcd"></button></td>
-        </tr>
     </tbody>
 </table>
 
