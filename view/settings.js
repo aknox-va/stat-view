@@ -1,6 +1,5 @@
 var settingsTab = "view/settings.html";
 
-
 if (!chrome.cookies) {
     chrome.cookies = chrome.experimental.cookies;
 }
@@ -16,6 +15,48 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // Initialize general settings buttons
+    chrome.storage.local.get('generalSettings', function(result) {
+        var generalSettings = result.generalSettings;
+        var buttons = document.getElementsByClassName("generalSettings");
+        for (var j = buttons.length; j-- > 0;) {
+            // Initialize the button setting
+            if (buttons[j].id in generalSettings) {
+                buttons[j].innerHTML = generalSettings[buttons[j].id];
+            } else {
+                buttons[j].innerHTML = "ON";
+            }
+        }
+    });
+
+    // Add general settings button handlers
+    var buttons = document.getElementsByClassName("generalSettings");
+    for (var j = buttons.length; j-- > 0;) {
+        // Setup the button click listener
+        buttons[j].addEventListener('click',
+            function() {
+                var self = this;
+                chrome.storage.local.get('generalSettings', function(result) {
+                    // Get the current settings
+                    var generalSettings =  result.generalSettings;
+                    // Flip the switch
+                    if (generalSettings[self.id] == "ON") {
+                        generalSettings[self.id] = "OFF";
+                    } else {
+                        generalSettings[self.id] = "ON";
+                    }
+                    // Display the setting change
+                    self.innerHTML = generalSettings[self.id];
+                    // Store the changed settings
+                    chrome.storage.local.set({generalSettings: generalSettings});
+                });
+            }
+        );
+    }
+
+    // Add other general settings handlers
+
 
     // Add a listener for the add appId button
     document.getElementById("addApp").addEventListener('click',
@@ -40,8 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add a list of all the URIs the user currently is hiding
     chrome.storage.local.get('hiddenUriList', function(result) {
         var uriList = result.hiddenUriList;
-
-        if (uriList != null) {
+        if (uriList) {
             var hiddenUriTable = document.getElementById("hiddenUris");
             for (var j = uriList.length; j-- > 0;) {
                 // Remove the entry if the entry is older than a week
@@ -59,6 +99,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+
+
+
 });
 
 
