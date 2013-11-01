@@ -11,7 +11,8 @@
         }
 
         #addAppIdRow td,
-        .buttonCell {
+        td.settingsValueCell,
+        td.buttonCell, {
             text-align: center;
         }
 
@@ -26,6 +27,94 @@
 <body>
 <header>Settings</header>
 
+<table id="generalSettings">
+    <caption>General Settings</caption>
+    <thead>
+        <tr>
+            <th>Settings</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!--
+        <tr>
+            <td>Theme</td>
+            <td class="settingsValueCell">
+                <select>
+                    <option>One</option>
+                    <option>Two</option>
+                </select>
+            </td>
+        </tr>
+        -->
+        <tr>
+            <td>Datastore Admin</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="displayDatastoreAdmin"></button></td>
+        </tr>
+        <tr>
+            <td>Dashboard Errors</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="displayDashboardErrors"></button></td>
+        </tr>
+        <tr>
+            <td>Error Logs</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="displayErrorLogs"></button></td>
+        </tr>
+        <!--
+        <tr>
+            <td>Error Logs Length</td>
+            <td class="settingsValueCell">
+                <select>
+                    <option>1 Day</option>
+                    <option>2 Days</option>
+                    <option>3 Days</option>
+                    <option>4 Days</option>
+                    <option>5 Days</option>
+                    <option>1 Week</option>
+                    <option>2 Weeks</option>
+                    <option>3 Weeks</option>
+                    <option>1 Month</option>
+                </select>
+            </td>
+        </tr>
+        -->
+        <tr>
+            <td>Queues</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="displayQueues"></button></td>
+        </tr>
+        <tr>
+            <td>Paused Queues</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="displayPausedQueues"></button></td>
+        </tr>
+        <tr>
+            <td>Disabled Queues</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="displayDisabledQueues"></button></td>
+        </tr>
+        <!--
+        <tr>
+            <td># waiting tasks needed to show queue</td>
+            <td class="settingsValueCell"><input type="text" /></td>
+        </tr>
+        <tr>
+            <td># tasks run in last min needed to show queue</td>
+            <td class="settingsValueCell"><input type="text" /></td>
+        </tr>
+        -->
+        <tr>
+            <td>Cron Jobs</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="displayCronJobs"></button></td>
+        </tr>
+        <!--
+        <tr>
+            <td>Display On Time Successful Cron Jobs</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="displayOnTimeCronJobs"></button></td>
+        </tr>
+        -->
+        <tr>
+            <td>XKCD</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="displayXkcd"></button></td>
+        </tr>
+    </tbody>
+</table>
 
 <table id="appIds">
     <caption>App Ids Listed In Dropdown</caption>
