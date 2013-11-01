@@ -20,8 +20,8 @@ table thead {
 }
 
 table thead.noData {
-    background-color: #860002;
-    color: #000000;
+    background-color: #2f0002;
+    color: #eac4e9;
 }
 
 table th {

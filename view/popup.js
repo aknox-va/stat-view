@@ -1,11 +1,6 @@
 var settingsTab = "view/settings.html";
 
 
-if (!chrome.cookies) {
-    chrome.cookies = chrome.experimental.cookies;
-}
-
-
 // Operations to run when the page data has loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Get the user's appIds from storage and display buttons for them
@@ -30,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                     chrome.tabs.remove(tabs[i].id);
                                 }
                             }
-
                             // Create the data viewer tab
                             chrome.tabs.create({active: true, url: newTabUrl});
                         });
@@ -39,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-
 
     // Add a listener for the settings button
     document.getElementById("settings").addEventListener('click',
@@ -51,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         chrome.tabs.remove(tabs[i].id);
                     }
                 }
-
                 // Show the settings tab
                 chrome.tabs.create({active: true, url: settingsTab});
             })

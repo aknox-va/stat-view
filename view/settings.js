@@ -1,10 +1,3 @@
-var settingsTab = "view/settings.html";
-
-if (!chrome.cookies) {
-    chrome.cookies = chrome.experimental.cookies;
-}
-
-
 // Operations to run when the page data has loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Get the user's appIds from storage and display entrys for them
