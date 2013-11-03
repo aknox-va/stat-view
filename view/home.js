@@ -379,7 +379,8 @@ function parseLogData(doc) {
     self.errorsOther = {};
 
     // Get the setting that details the maximum log age
-    self.oldestAllowedDate = new Date(2013, 9, 31, 0, 0, 0, 0);
+    self.oldestAllowedDate = new Date(new Date().getTime() - 3*24*60*60*1000);    // Set oldest date to 3 days ago
+
 
     // Process the first page
     processPages(doc, function() {
