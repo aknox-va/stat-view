@@ -34,20 +34,32 @@ table td {
     color: #000000;
 }
 
-table tr.error500 {
-    background-color: #d9b5a3;
-    color: #260002;
-}
+table tr.errors500 { background-color: #d9b5a3; }
+table tr.errors500 a {  color: #260002; }
 
-table tr.error500-frequent {
-    background-color: #ac6f65;
-    color: #260002;
-}
+table tr.errors500-frequent { background-color: #ac6f65; }
+table tr.errors500-frequent a {  color: #260002; }
 
-table tr.error500-overload {
-    background-color: #ae433a;
-    color: #260002;
-}
+table tr.errors500-overload { background-color: #ae433a; }
+table tr.errors500-overload a { color: #260002; }
+
+table tr.errors400 { background-color: #b0d9d0; }
+table tr.errors400 a { color: #001426; }
+
+table tr.errors400-frequent { background-color: #74aba1; }
+table tr.errors400-frequent a { color: #001426; }
+
+table tr.errors400-overload { background-color: #29a7ae; }
+table tr.errors400-overload a { color: #001426; }
+
+table tr.errorsOther { background-color: #d4d9b2; }
+table tr.errorsOther a { color: #262300; }
+
+table tr.errorsOther-frequent { background-color: #abac65; }
+table tr.errorsOther-frequent a { color: #262300; }
+
+table tr.errorsOther-overload { background-color: #aeac2d; }
+table tr.errorsOther-overload a { color: #262300; }
 
 table caption {
     background-color: #2f4834;

@@ -10,13 +10,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initialize general settings buttons
-    chrome.storage.local.get('generalSettings', function(result) {
-        var generalSettings = result.generalSettings;
-        var buttons = document.getElementsByClassName("generalSettings");
+    chrome.storage.local.get('scraperToggles', function(result) {
+        var scraperToggles = {};
+        if (result && result.scraperToggles) {
+            scraperToggles = result.scraperToggles;
+        }
+        // Get the buttons and set their initial values according to the general settings
+        var buttons = document.getElementsByClassName("scraperToggles");
         for (var j = buttons.length; j-- > 0;) {
             // Initialize the button setting
-            if (buttons[j].id in generalSettings) {
-                buttons[j].innerHTML = generalSettings[buttons[j].id];
+            if (buttons[j].id in scraperToggles) {
+                buttons[j].innerHTML = scraperToggles[buttons[j].id];
             } else {
                 buttons[j].innerHTML = "ON";
             }
@@ -24,25 +28,28 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Add general settings button handlers
-    var buttons = document.getElementsByClassName("generalSettings");
+    var buttons = document.getElementsByClassName("scraperToggles");
     for (var j = buttons.length; j-- > 0;) {
         // Setup the button click listener
         buttons[j].addEventListener('click',
             function() {
                 var self = this;
-                chrome.storage.local.get('generalSettings', function(result) {
+                chrome.storage.local.get('scraperToggles', function(result) {
                     // Get the current settings
-                    var generalSettings =  result.generalSettings;
+                    var scraperToggles = {};
+                    if (result && result.scraperToggles) {
+                        scraperToggles = result.scraperToggles;
+                    }
                     // Flip the switch
-                    if (generalSettings[self.id] == "ON") {
-                        generalSettings[self.id] = "OFF";
+                    if (!scraperToggles[self.id] || scraperToggles[self.id] == "ON") {
+                        scraperToggles[self.id] = "OFF";
                     } else {
-                        generalSettings[self.id] = "ON";
+                        scraperToggles[self.id] = "ON";
                     }
                     // Display the setting change
-                    self.innerHTML = generalSettings[self.id];
+                    self.innerHTML = scraperToggles[self.id];
                     // Store the changed settings
-                    chrome.storage.local.set({generalSettings: generalSettings});
+                    chrome.storage.local.set({scraperToggles: scraperToggles});
                 });
             }
         );

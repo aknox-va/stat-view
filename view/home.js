@@ -20,20 +20,20 @@ window.onload = function() {
         htmlParsers["https://appengine.google.com/cron?app_id=s~" + appId] = parseCronJobs;
         htmlParsers["https://appengine.google.com/queues?app_id=s~" + appId] = parseTaskQueues;
         htmlParsers["https://appengine.google.com/dashboard?app_id=s~" + appId] = parseDashboardErrors;
-        htmlParsers["https://appengine.google.com/logs?app_id=s~" + appId + "&severity_level_override=0&severity_level=3&limit=200"] = parseLogData;
+        htmlParsers["https://appengine.google.com/logs?app_id=s~" + appId + "&severity_level_override=0&severity_level=3&limit=200&layout=none"] = parseLogData;
 
         // Remove any sources the settings say the user doesn't want and parse the ones they do want
-        chrome.storage.local.get('generalSettings', function(result) {
-            var generalSettings = {};
-            if (result && result.generalSettings) {
-                generalSettings = result.generalSettings;
+        chrome.storage.local.get('scraperToggles', function(result) {
+            var scraperToggles = {};
+            if (result && result.scraperToggles) {
+                scraperToggles = result.scraperToggles;
             }
             // Remove unwanted urls
             for (var parserUrl in htmlParsers) {
                 var parserId = htmlParsers[parserUrl]();
                 var parserCaption = htmlParsers[parserUrl]('getCaption');
                 // User has turned off this source so don't grab data for it
-                if (generalSettings[parserId] == "OFF") {
+                if (scraperToggles[parserId] == "OFF") {
                     // Remove the url from the list of urls to parse
                     delete htmlParsers[parserUrl];
                     // Remove the display table from the display window
@@ -364,6 +364,7 @@ function parseLogData(doc) {
     // Set Table Parameters
     var id = 'getLogData';
     var caption = "Error Logs";
+    var self = this;
 
     // No doc to parse so just return the parser id
     if (!doc) {
@@ -372,121 +373,212 @@ function parseLogData(doc) {
         return caption;
     }
 
-    // Get the expanded log entries
-    var entries = doc.getElementsByClassName("ae-log");
+    // Initialize the parsed data containers
+    self.errors500 = {};
+    self.errors400 = {};
+    self.errorsOther = {};
 
-    // Run through each log entry and group them
-    var numEntries = entries.length;
-    var parsedData = "";
-    var errors500 = {};
-    var errors400 = {};
-    var errorsOther = {};
-    for (var i = 0; i < numEntries; i++) {
-        var spans = entries[i].getElementsByTagName("span");
-        var date = spans[0].innerHTML;
-        var uri = spans[1].innerHTML;
-        var errorNum = spans[2].innerHTML;
+    // Get the setting that details the maximum log age
+    self.oldestAllowedDate = new Date(2013, 9, 31, 0, 0, 0, 0);
 
-        if (errorNum.charAt(0) == "5") {
-            if (uri in errors500) {
-                errors500[uri].count += 1;
-                if (new Date(date) > new Date(errors500[uri].date)) {
-                    errors500[uri].date = date;
-                }
-            } else {
-                errors500[uri] = {errorNum:errorNum, date:date, count:1}
-            }
-        } else if (errorNum.charAt(0) == "4") {
-            if (uri in errors400) {
-                errors400[uri].count += 1;
-                if (new Date(date) > new Date(errors400[uri].date)) {
-                    errors400[uri].date = date;
-                }
-            } else {
-                errors400[uri] = {errorNum:errorNum, date:date, count:1}
-            }
-        } else {
-            if (uri in errorsOther) {
-                errorsOther[uri].count += 1;
-                if (new Date(date) > new Date(errorsOther[uri].date)) {
-                    errorsOther[uri].date = date;
-                }
-            } else {
-                errorsOther[uri] = {errorNum:errorNum, date:date, count:1}
-            }
-        }
-    }
+    // Process the first page
+    processPages(doc, function() {
+        // Build the response
+        var parsedData = "";
 
-    // Build the response
-    var parsedData = "";
-
-    // Add the 500 errors to the parsed data in order of date
-    while (1) {
-        var newestErrorUri = null;
-        for (var uri in errors500) {
-            if (newestErrorUri) {
-                if (errors500[newestErrorUri] < errors500[uri]) {
+        // Add the 500 errors to the parsed data in order of date
+        while (1) {
+            var newestErrorUri = null;
+            for (var uri in self.errors500) {
+                if (newestErrorUri) {
+                    if (self.errors500[newestErrorUri] < self.errors500[uri]) {
+                        newestErrorUri = uri;
+                    }
+                } else {
                     newestErrorUri = uri;
                 }
-            } else {
-                newestErrorUri = uri;
             }
-        }
-        if (errors500.hasOwnProperty(newestErrorUri)) {
-            var cssClass = "error500";
-            if (errors500[newestErrorUri].count >= 10) {
-                cssClass = "error500-frequent"
-            } else if (errors500[newestErrorUri].count >= 100) {
-                cssClass = "error500-overload"
-            }
-            parsedData += "<tr class='" + cssClass + "'><td><a href='https://appengine.google.com/logs?filter_type=regex&severity_level_override=1&view=search&app_id=" + appId + "&filter=" + newestErrorUri + "' target='_BLANK'>" + newestErrorUri + "</a></td><td>" + errors500[newestErrorUri].errorNum + "</td><td>" + errors500[newestErrorUri].date + "</td><td>" + errors500[newestErrorUri].count + "</td></tr>";
-            delete errors500[newestErrorUri];
-        } else {
-            break;
-        }
-    }
+            if (self.errors500.hasOwnProperty(newestErrorUri)) {
+                var cssClass = "errors500";
+                if (self.errors500[newestErrorUri].count >= 10) {
+                    cssClass = "errors500-frequent"
+                } else if (self.errors500[newestErrorUri].count >= 100) {
+                    cssClass = "errors500-overload"
+                }
+                parsedData += buildUriEntry (cssClass, newestErrorUri, self.errors500[newestErrorUri].errorNum,
+                                             newestErrorUri, self.errors500[newestErrorUri].latestDate,
+                                             self.errors500[newestErrorUri].oldestDate,
+                                             self.errors500[newestErrorUri].count);
 
-    // Add the 400 errors to the parsed data in order of date
-    while (1) {
-        var newestErrorUri = null;
-        for (var uri in errors400) {
-            if (newestErrorUri) {
-                if (errors400[newestErrorUri] < errors400[uri]) {
+                delete self.errors500[newestErrorUri];
+            } else {
+                break;
+            }
+        }
+
+        // Add the 400 errors to the parsed data in order of date
+        while (1) {
+            var newestErrorUri = null;
+            for (var uri in self.errors400) {
+                if (newestErrorUri) {
+                    if (self.errors400[newestErrorUri] < self.errors400[uri]) {
+                        newestErrorUri = uri;
+                    }
+                } else {
                     newestErrorUri = uri;
                 }
+            }
+            if (self.errors400.hasOwnProperty(newestErrorUri)) {
+                var cssClass = "errors400";
+                if (self.errors400[newestErrorUri].count >= 10) {
+                    cssClass = "errors400-frequent"
+                } else if (self.errors400[newestErrorUri].count >= 100) {
+                    cssClass = "errors400-overload"
+                }
+                parsedData += buildUriEntry (cssClass, newestErrorUri, self.errors400[newestErrorUri].errorNum,
+                                             newestErrorUri, self.errors400[newestErrorUri].latestDate,
+                                             self.errors400[newestErrorUri].oldestDate,
+                                             self.errors400[newestErrorUri].count);
+                delete self.errors400[newestErrorUri];
             } else {
-                newestErrorUri = uri;
+                break;
             }
         }
-        if (errors400.hasOwnProperty(newestErrorUri)) {
-            parsedData += "<tr class='error400'><td><a href='https://appengine.google.com/logs?filter_type=regex&severity_level_override=1&view=search&app_id=" + appId + "&filter=" + newestErrorUri + "' target='_BLANK'>" + newestErrorUri + "</a></td><td>" + errors400[newestErrorUri].errorNum + "</td><td>" + errors400[newestErrorUri].date + "</td><td>" + errors400[newestErrorUri].count + "</td></tr>";
-            delete errors400[newestErrorUri];
-        } else {
-            break;
-        }
-    }
 
-    // Add the other errors to the parsed data in order of date
-    while (1) {
-        var newestErrorUri = null;
-        for (var uri in errorsOther) {
-            if (newestErrorUri) {
-                if (errorsOther[newestErrorUri] < errorsOther[uri]) {
+        // Add the other errors to the parsed data in order of date
+        while (1) {
+            var newestErrorUri = null;
+            for (var uri in self.errorsOther) {
+                if (newestErrorUri) {
+                    if (self.errorsOther[newestErrorUri] < self.errorsOther[uri]) {
+                        newestErrorUri = uri;
+                    }
+                } else {
                     newestErrorUri = uri;
                 }
+            }
+            if (self.errorsOther.hasOwnProperty(newestErrorUri)) {
+                var cssClass = "errorsOther";
+                if (self.errorsOther[newestErrorUri].count >= 10) {
+                    cssClass = "errorsOther-frequent"
+                } else if (self.errorsOther[newestErrorUri].count >= 100) {
+                    cssClass = "errorsOther-overload"
+                }
+                parsedData += buildUriEntry (cssClass, newestErrorUri, self.errorsOther[newestErrorUri].errorNum,
+                                             newestErrorUri, self.errorsOther[newestErrorUri].latestDate,
+                                             self.errorsOther[newestErrorUri].oldestDate,
+                                             self.errorsOther[newestErrorUri].count);
+                delete self.errorsOther[newestErrorUri];
             } else {
-                newestErrorUri = uri;
+                break;
             }
         }
-        if (errorsOther.hasOwnProperty(newestErrorUri)) {
-            parsedData += "<tr class='errorOther'><td><a href='https://appengine.google.com/logs?filter_type=regex&severity_level_override=1&view=search&app_id=" + appId + "&filter=" + newestErrorUri + "' target='_BLANK'>" + newestErrorUri + "</a></td><td>" + errorsOther[newestErrorUri].errorNum + "</td><td>" + errorsOther[newestErrorUri].date + "</td><td>" + errorsOther[newestErrorUri].count + "</td></tr>";
-            delete errorsOther[newestErrorUri];
+
+        var tableHead = "<thead></tr><th>URI</th><th>Code</th><th>Latest Occurrence</th><th>Earliest Occurrence</th><th>#Occurrences</th><tr></thead>";
+
+        // Insert the parsed data into the viewing tab
+        insertData(id, "<caption><a href='" + doc.URL + "' target='_BLANK'>" + caption + "</a></caption>" + tableHead + parsedData);
+    });
+
+    function buildUriEntry (cssClass, uri, errorNum, path, latestDate, oldestDate, count) {
+        var url = "";
+        url += "https://appengine.google.com/logs?";
+        url += "filter_type=labels&view=search&severity_level_override=0&severity_level=3";
+        url += "&filter=status%3A" + errorNum + "+path%3A" + uri;
+        url += "&app_id=" + appId;
+
+        var entry = "";
+        entry += "<tr class='" + cssClass + "'>";
+        entry += "<td><a href='" + url + "' target='_BLANK'>" + uri + "</a></td>";
+        entry += "<td>" + errorNum + "</td>";
+        entry += "<td>" + latestDate.toLocaleString() + "</td>"
+        entry += "<td>" + oldestDate.toLocaleString() + "</td>" ;
+        entry += "<td>" + count + "</td>";
+        entry += "</tr>";
+        return entry;
+    }
+
+
+    // Parse the data in the given html page and store it in the un-formatted data arrays
+    function processPages(doc, callback) {
+        // Get the expanded log entries
+        var entries = doc.getElementsByClassName("ae-log");
+
+        // Store the number of log entries
+        var numEntries = entries.length;
+
+        // Parse each entry on this page and store it appropriately
+        for (var i = 0; i < numEntries; i++) {
+            var spans = entries[i].getElementsByTagName("span");
+            var date = new Date(spans[0].innerHTML);
+            var uri = spans[1].innerHTML;
+            var errorNum = spans[2].innerHTML;
+
+            // Skip the log entry if it is too old and finish grabbing logs
+            if (date < self.oldestAllowedDate) {
+                self.notTooOld = false;
+                if (callback) {
+                    callback();
+                    return null;
+                }
+            }
+
+            // Sort the logs into their correct associative arrays
+            if (errorNum.charAt(0) == "5") {
+                if (uri in self.errors500) {
+                    self.errors500[uri].count += 1;
+                    if (date > self.errors500[uri].latestDate) { self.errors500[uri].latestDate = date; }
+                    if (date < self.errors500[uri].oldestDate) { self.errors500[uri].oldestDate = date; }
+                } else {
+                    self.errors500[uri] = {errorNum:errorNum, latestDate:date, oldestDate:date, count:1}
+                }
+            } else if (errorNum.charAt(0) == "4") {
+                if (uri in self.errors400) {
+                    self.errors400[uri].count += 1;
+                    if (date > self.errors400[uri].date) { self.errors400[uri].date = date; }
+                    if (date < self.errors400[uri].date) { self.errors400[uri].date = date; }
+                } else {
+                    self.errors400[uri] = {errorNum:errorNum, latestDate:date, oldestDate:date, count:1}
+                }
+            } else {
+                if (uri in self.errorsOther) {
+                    self.errorsOther[uri].count += 1;
+                    if (date > self.errorsOther[uri].latestDate) { self.errorsOther[uri].latestDate = date; }
+                    if (date < self.errorsOther[uri].oldestDate) { self.errorsOther[uri].oldestDate = date; }
+                } else {
+                    self.errorsOther[uri] = {errorNum:errorNum, latestDate:date, oldestDate:date, count:1}
+                }
+            }
+        }
+
+        // Grab the next page and process it
+        var nextUrl = doc.body.getElementsByClassName("ae-paginate-next")[0].href;
+
+        // More logs available on other pages so process the next page
+        if (nextUrl) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", nextUrl, true);
+            xhr.responseType = "document";
+            xhr.send();
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        processPages(xhr.response, callback);
+                    } else {
+                        alert ("Error encountered while parsing logs: " + xhr.status + " - " + xhr.statusText);
+                        if (callback) {
+                            callback();
+                            return null;
+                        }
+                    }
+                }
+            }
         } else {
-            break;
+            if (callback) {
+                callback();
+                return null;
+            }
         }
     }
-    var tableHead = "<thead></tr><th>URI</th><th>Code</th><th>NewestDate</th><th>#Occurrences</th><tr></thead>";
-
-    // Insert the parsed data into the viewing tab
-    insertData(id, "<caption><a href='" + doc.URL + "' target='_BLANK'>" + caption + "</a></caption>" + tableHead + parsedData);
 }

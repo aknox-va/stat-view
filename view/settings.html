@@ -27,39 +27,39 @@
 <body>
 <header>Settings</header>
 
-<table id="generalSettings">
-    <caption>General Settings</caption>
+<table id="scraperToggles">
+    <caption>Toggle Scrapers</caption>
     <thead>
         <tr>
-            <th>Settings</th>
-            <th>Value</th>
+            <th>Scrapper</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
         <!-- id needs to be set to the same id specified in the parsing object -->
         <tr>
             <td>Datastore Admin</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="getDatastoreAdmin"></button></td>
+            <td class="settingsValueCell"><button class="scraperToggles" id="getDatastoreAdmin"></button></td>
         </tr>
         <tr>
             <td>Dashboard Errors</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="getDashboardErrors"></button></td>
+            <td class="settingsValueCell"><button class="scraperToggles" id="getDashboardErrors"></button></td>
         </tr>
         <tr>
             <td>Error Logs</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="getLogData"></button></td>
+            <td class="settingsValueCell"><button class="scraperToggles" id="getLogData"></button></td>
         </tr>
         <tr>
             <td>Task Queues</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="getTaskQueues"></button></td>
+            <td class="settingsValueCell"><button class="scraperToggles" id="getTaskQueues"></button></td>
         </tr>
         <tr>
             <td>Cron Jobs</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="getCronJobs"></button></td>
+            <td class="settingsValueCell"><button class="scraperToggles" id="getCronJobs"></button></td>
         </tr>
         <tr>
             <td>XKCD</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="getXkcd"></button></td>
+            <td class="settingsValueCell"><button class="scraperToggles" id="getXkcd"></button></td>
         </tr>
         <!--
         <tr>
@@ -78,14 +78,12 @@
                     <option>1 Day</option>
                     <option>2 Days</option>
                     <option>3 Days</option>
-                    <option>4 Days</option>
-                    <option>5 Days</option>
-                    <option>1 Week</option>
-                    <option>2 Weeks</option>
-                    <option>3 Weeks</option>
-                    <option>1 Month</option>
                 </select>
             </td>
+        </tr>
+        <tr>
+            <td>Min Displayed Error Occurrence</td>
+            <td class="settingsValueCell"><button class="generalSettings" id="minDisplayedErrorCount"></button></td>
         </tr>
         <tr>
             <td>Paused Queues</td>
