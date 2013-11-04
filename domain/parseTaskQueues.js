@@ -21,17 +21,21 @@ function parseTaskQueues(doc) {
     for (var i = rows.length; --i > 0;) {
         var row = rows[i];
         var column = row.getElementsByTagName("td");
+        // Remove the maximum rate, enforced rate, bucket size, and maximum concurrent columns
         removeElement(column[1]);
         removeElement(column[1]);
         removeElement(column[1]);
         removeElement(column[1]);
+
         // Only enabled queues can be successful
         if (row.className.indexOf("paused") == -1) {
-            var queuedTasks = Number(column[1].innerHTML);
-            var runLastMin = Number(column[2].innerHTML);
+            var queuedTasks = parseInt(column[2].innerHTML);
+            var runLastMin = parseInt(column[3].innerHTML);
             //todo: may have queues that are rarely empty so drill into each queue to check for tasks that keep retrying
             // If there are tasks in the queue, and nothing ran in last min then keep the row
-            if (!(queuedTasks > 0 && runLastMin == 0)) {
+            if (queuedTasks > 0 && runLastMin == 0) {
+                row.setAttribute("style", "background-color: #ac6f65;")
+            } else {
                 removeElement(row);
             }
         }

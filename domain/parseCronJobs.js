@@ -1,7 +1,7 @@
 //
 function parseCronJobs(doc) {
     // Set Table Parameters
-    var caption = "Cron Jobs - Non-Ideal Runs";
+    var caption = "Cron Jobs (First page only)";
 
     // No doc to parse so just return the caption text
     if (!doc) { return caption; }
@@ -19,8 +19,11 @@ function parseCronJobs(doc) {
         var spans = columns[1].getElementsByTagName("span");
         var timing = spans[1].innerHTML;
         var status = spans[2].innerHTML;
-        if (timing.indexOf("on time") != -1 && status.indexOf("Success") != -1) {
-            row.parentNode.removeChild(row);
+        if (timing.indexOf("on time") == -1) {
+            row.setAttribute("style", "background-color: #ae433a;")
+        }
+        if (status.indexOf("Success") == -1) {
+            row.setAttribute("style", "background-color: #ac6f65;")
         }
     }
     var result = table.innerHTML;
