@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.storage.local.get('hiddenUriList', function(result) {
         var uriList = result.hiddenUriList;
         if (uriList) {
+            // Display the entries in the table
             var hiddenUriTable = document.getElementById("hiddenUris");
             for (var j = uriList.length; j-- > 0;) {
                 // Remove the entry if the entry is older than a week
@@ -93,17 +94,50 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show the row if the entry is less than a week old
                 } else {
                     var row = document.createElement("tr");
-                    row.innerHTML = "<td>" + uriList[j].uri + "</td><td>" + new Date(uriList[j].time).toDateString() + "</td>";
+                    row.innerHTML = "<td><button class='show-dashboard-row' value='" + uriList[j].uri + "'>Show</button> " + uriList[j].uri + "</td><td>" + new Date(uriList[j].time).toDateString() + "</td>";
                     hiddenUriTable.appendChild(row);
                 }
             }
+
+            var buttons = document.querySelectorAll('.show-dashboard-row')
+            chrome.storage.local.get('hiddenUriList', function(result) {
+                var uriList = result.hiddenUriList;
+
+                for (var i = buttons.length; i-- > 0;) {
+                    // Add an event listener if the row wasn't removed
+                    (function(button) {
+                        buttons[i].addEventListener('click',
+                            function() {
+                                // add this URI to the hidden urls storage
+                                var uri = button.value;
+                                chrome.storage.local.get('hiddenUriList', function(result) {
+                                    var uriList = result.hiddenUriList;
+                                    if (uriList == null) { uriList = []; }
+                                    for (var entry in uriList) {
+                                        if (uriList[entry]['uri'] == button.value) {
+                                            delete uriList[entry]
+                                        }
+                                    }
+                                    // Save the updated list
+                                    chrome.storage.local.set({hiddenUriList: uriList});
+                                });
+
+                                // Remove the row from the page
+                                removeElement(button.parentNode.parentNode);
+                            }
+                        );
+                    } (buttons[i]))
+                }
+            });
         }
     });
-
-
-
-
 });
+
+
+// removes the given element from the page
+function removeElement(element) {
+    element && element.parentNode && element.parentNode.removeChild(element);
+}
 
 
 // Adds the given appId to the table of available apps, and sets up the button used to remove the entry
