@@ -31,9 +31,21 @@ window.onload = function() {
                 head.appendChild(script);
             }
 
+            // Loads the styling specific to the scraper table into the document head
+            function loadStyle(parserName) {
+                // Adding the script tag to the head as suggested before
+                var head = document.getElementsByTagName('head')[0];
+                var style = document.createElement('style');
+                style.innerHTML = window[parserName]().style;
+                head.appendChild(style);
+            }
+
             function runParser (parserName, parserUrl) {
+                // Load the style now that we have the parser
+                loadStyle(parserName);
+
                 // Add the empty display table to the display window
-                var parserCaption = window[parserName]();
+                var parserCaption = window[parserName]().captionText;
 
                 var newTable = document.createElement("table");
                 newTable.setAttribute('id', parserName);
@@ -43,7 +55,7 @@ window.onload = function() {
                 // get DOM for the url and process it using the provided function
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", parserUrl, true);
-                xhr.onload = function(){window[parserName](this.response)};
+                xhr.onload = function(){window[parserName]().run(this.response)};
                 xhr.responseType = "document";
                 xhr.send();
 

@@ -1,14 +1,19 @@
 //
-function parseXkcd(doc) {
-    // Set Table Parameters
-    var caption = "Today's XKCD Comic";
+function parseXkcd() {
+    this.captionText = "Today's XKCD Comic";
 
-    // No doc to parse so just return the caption text
-    if (!doc) { return caption; }
+    this.style = "";
 
-    // Get the xkcd image
-    var result = doc.getElementById("comic").innerHTML;
+    this.run = function (doc) {
+        // No doc to parse so just return the caption text
+        if (!doc) { return caption; }
 
-    // Insert the parsed data into the viewing tab
-    insertData(arguments.callee.name, "<caption><a href='" + doc.URL + "' target='_BLANK'>" + caption + "</a></caption>" + result);
+        // Get the xkcd image
+        var result = doc.getElementById("comic").innerHTML;
+
+        // Insert the parsed data into the viewing tab
+        insertData("parseXkcd", "<caption><a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a></caption>" + result);
+    }
+
+    return this;
 }

@@ -36,9 +36,9 @@ function loadAllowedParserList(appId, callback) {
 // doc will contain the HTML DOM returned by the fetch
 /*
 function <scraper function name in the above array>(doc) {
-    // Set Table Parameters
-    var id = '<>';
-    var caption = "<the text to display in the caption tag above the table the formatted data is in>";
+    self.captionText = "<the text to display in the caption tag above the table the formatted data is in>";
+
+    self.style = "<css code to format this table. prefix #<scraper function name> to each entry to ensure it only affect the table for this scraper>"
 
     // No doc to parse so just return the caption text
     if (!doc) { return caption; }
@@ -48,6 +48,6 @@ function <scraper function name in the above array>(doc) {
     var result = <the formatted data that will be placed in the display table>
 
     // Insert the parsed data into the viewing tab
-    insertData(id, "<caption><a href='" + doc.URL + "' target='_BLANK'>" + caption + "</a></caption>" + result, <a callback function if more processing needs to be done after the data is loaded>);
+    insertData(id, "<caption><a href='" + doc.URL + "' target='_BLANK'>" + self.captionText + "</a></caption>" + result, <a callback function if more processing needs to be done after the data is loaded>);
 }
 */
