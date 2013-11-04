@@ -34,7 +34,7 @@ function parseTaskQueues(doc) {
             //todo: may have queues that are rarely empty so drill into each queue to check for tasks that keep retrying
             // If there are tasks in the queue, and nothing ran in last min then keep the row
             if (queuedTasks > 0 && runLastMin == 0) {
-                row.setAttribute("style", "background-color: #ac6f65;")
+                row.setAttribute("style", "background-color: #ac6f65;");
             } else {
                 removeElement(row);
             }
