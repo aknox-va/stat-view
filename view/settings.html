@@ -2,6 +2,8 @@
 <html>
 <head>
     <title></title>
+    <script src="../domain/scraper_list.js"></script>
+    <script src="settings.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/styling.css" />
     <link rel="stylesheet" type="text/css" href="../css/formatting.css" />
     <style>
@@ -28,119 +30,92 @@
     </style>
 </head>
 <body>
-<header>Settings</header>
+    <header>Settings</header>
 
-<table id="scraperToggles">
-    <caption>Toggle Scrapers</caption>
-    <thead>
-        <tr>
-            <th>Scrapper</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- id needs to be set to the same id specified in the parsing object -->
-        <tr>
-            <td>Datastore Admin</td>
-            <td class="settingsValueCell"><button class="scraperToggles" id="getDatastoreAdmin"></button></td>
-        </tr>
-        <tr>
-            <td>Dashboard Errors</td>
-            <td class="settingsValueCell"><button class="scraperToggles" id="getDashboardErrors"></button></td>
-        </tr>
-        <tr>
-            <td>Error Logs</td>
-            <td class="settingsValueCell"><button class="scraperToggles" id="getLogData"></button></td>
-        </tr>
-        <tr>
-            <td>Task Queues</td>
-            <td class="settingsValueCell"><button class="scraperToggles" id="getTaskQueues"></button></td>
-        </tr>
-        <tr>
-            <td>Cron Jobs</td>
-            <td class="settingsValueCell"><button class="scraperToggles" id="getCronJobs"></button></td>
-        </tr>
-        <tr>
-            <td>XKCD</td>
-            <td class="settingsValueCell"><button class="scraperToggles" id="getXkcd"></button></td>
-        </tr>
-        <!--
-        <tr>
-            <td>Theme</td>
-            <td class="settingsValueCell">
-                <select>
-                    <option>One</option>
-                    <option>Two</option>
-                </select>
+    <table id="scraperToggles">
+        <caption>Toggle Scrapers</caption>
+        <thead>
+            <tr>
+                <th>Scrapper</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+            <!--
+            <tr>
+                <td>Theme</td>
+                <td class="settingsValueCell">
+                    <select>
+                        <option>One</option>
+                        <option>Two</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Error Logs Length</td>
+                <td class="settingsValueCell">
+                    <select>
+                        <option>1 Day</option>
+                        <option>2 Days</option>
+                        <option>3 Days</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Min Displayed Error Occurrence</td>
+                <td class="settingsValueCell"><button class="generalSettings" id="minDisplayedErrorCount"></button></td>
+            </tr>
+            <tr>
+                <td>Paused Queues</td>
+                <td class="settingsValueCell"><button class="generalSettings" id="displayPausedQueues"></button></td>
+            </tr>
+            <tr>
+                <td>Disabled Queues</td>
+                <td class="settingsValueCell"><button class="generalSettings" id="displayDisabledQueues"></button></td>
+            </tr>
+            <tr>
+                <td># waiting tasks needed to show queue</td>
+                <td class="settingsValueCell"><input type="text" /></td>
+            </tr>
+            <tr>
+                <td># tasks run in last min needed to show queue</td>
+                <td class="settingsValueCell"><input type="text" /></td>
+            </tr>
+            <tr>
+                <td>Display On Time Successful Cron Jobs</td>
+                <td class="settingsValueCell"><button class="generalSettings" id="displayOnTimeCronJobs"></button></td>
+            </tr>
+            -->
+
+    <table id="appIds">
+        <caption>App Ids Listed In Dropdown</caption>
+        <thead>
+            <tr>
+                <th>App Id</th>
+                <th>Operation Button</th>
+            </tr>
+        </thead>
+        <tr id="addAppIdRow">
+            <td>
+                <input type="text" value="" id="addAppName" />
+            </td>
+            <td class="buttonCell">
+                <button id="addApp">Add GAE App Id</button>
             </td>
         </tr>
-        <tr>
-            <td>Error Logs Length</td>
-            <td class="settingsValueCell">
-                <select>
-                    <option>1 Day</option>
-                    <option>2 Days</option>
-                    <option>3 Days</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>Min Displayed Error Occurrence</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="minDisplayedErrorCount"></button></td>
-        </tr>
-        <tr>
-            <td>Paused Queues</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="displayPausedQueues"></button></td>
-        </tr>
-        <tr>
-            <td>Disabled Queues</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="displayDisabledQueues"></button></td>
-        </tr>
-        <tr>
-            <td># waiting tasks needed to show queue</td>
-            <td class="settingsValueCell"><input type="text" /></td>
-        </tr>
-        <tr>
-            <td># tasks run in last min needed to show queue</td>
-            <td class="settingsValueCell"><input type="text" /></td>
-        </tr>
-        <tr>
-            <td>Display On Time Successful Cron Jobs</td>
-            <td class="settingsValueCell"><button class="generalSettings" id="displayOnTimeCronJobs"></button></td>
-        </tr>
-        -->
-    </tbody>
-</table>
+    </table>
 
-<table id="appIds">
-    <caption>App Ids Listed In Dropdown</caption>
-    <thead>
-        <tr>
-            <th>App Id</th>
-            <th>Operation Button</th>
-        </tr>
-    </thead>
-    <tr id="addAppIdRow">
-        <td>
-            <input type="text" value="" id="addAppName" />
-        </td>
-        <td class="buttonCell">
-            <button id="addApp">Add GAE App Id</button>
-        </td>
-    </tr>
-</table>
-
-<table id="hiddenUris">
-    <caption>Hidden URIs</caption>
-    <thead>
-        <tr>
-            <th>URI</th>
-            <th>Date Hidden</th>
-        </tr>
-    </thead>
-</table>
-
-
-<script src="settings.js"></script>
+    <table id="hiddenUris">
+        <caption>Hidden URIs</caption>
+        <thead>
+            <tr>
+                <th>URI</th>
+                <th>Date Hidden</th>
+            </tr>
+        </thead>
+    </table>
 </body>
 </html>

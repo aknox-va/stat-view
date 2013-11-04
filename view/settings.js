@@ -9,7 +9,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Initialize general settings buttons
+    // Get all available parsers
+    var htmlParsers = loadParserList("just want the function names");
+
+    // Add the html entries for each enable/disable parser button
+    var table = document.getElementById("scraperToggles").getElementsByTagName("tbody")[0];
+    for (var url in htmlParsers) {
+        var row = document.createElement("tr");
+        row.innerHTML = "<tr><td>" + htmlParsers[url] + "</td><td class='settingsValueCell'><button class='scraperToggles' id='" + htmlParsers[url] + "'></button></td></tr>";
+        table.appendChild(row);
+    }
+
+    // Initialize scraper buttons
     chrome.storage.local.get('scraperToggles', function(result) {
         var scraperToggles = {};
         if (result && result.scraperToggles) {
@@ -27,7 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Add general settings button handlers
+
+    // Add scraper toggle button handlers
     var buttons = document.getElementsByClassName("scraperToggles");
     for (var j = buttons.length; j-- > 0;) {
         // Setup the button click listener
