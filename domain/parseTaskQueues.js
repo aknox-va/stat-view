@@ -1,10 +1,9 @@
 //
 function parseTaskQueues() {
+    this.url = function(appId) { return "https://appengine.google.com/queues?app_id=s~" + appId; }
     this.captionText = "Stuck Task Queues";
 
-    this.style = "";
-
-    this.run = function (doc) {
+    this.process = function (doc, callback) {
         // Get the operations table
         var table = doc.getElementById("ae-tasks-queue-table");
         table.getElementsByTagName("caption")[0].innerHTML = "<a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a>";
@@ -44,11 +43,6 @@ function parseTaskQueues() {
             link.target = "_BLANK";
         }
 
-        var result = table.innerHTML;
-
-        // Insert the parsed data into the viewing tab
-        insertData("parseTaskQueues", result);
+        callback(table.innerHTML);
     }
-
-    return this;
 }

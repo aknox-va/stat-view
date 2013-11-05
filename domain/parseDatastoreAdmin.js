@@ -1,10 +1,9 @@
 //
-function parseDatastoreAdmin(doc) {
+function parseDatastoreAdmin() {
+    this.url = function(appId) { return "https://ah-builtin-python-bundle-dot-" + appId + ".appspot.com/_ah/datastore_admin/?app_id=s~" + this.appId + "&adminconsolecustompage"; }
     this.captionText = "Datastore Admin - Completed Operation Errors";
 
-    this.style = "";
-
-    this.run = function(doc) {
+    this.process = function(doc, callback) {
         // Get the operations table
         var table = doc.getElementById("operations");
         var rows = table.getElementsByTagName("tr");
@@ -19,11 +18,7 @@ function parseDatastoreAdmin(doc) {
                 row.parentNode.removeChild(row);
             }
         }
-        var result = table.innerHTML;
 
-        // Insert the parsed data into the viewing tab
-        insertData("parseDatastoreAdmin", "<caption><a href='" + doc.URL + "' target='_BLANK'>" + self.captionText + "</a></caption>" + result);
+        callback("<caption><a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a></caption>" + table.innerHTML);
     }
-
-    return this;
 }

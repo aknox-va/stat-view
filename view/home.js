@@ -7,58 +7,57 @@ window.onload = function() {
     if (urlParam[0] == "appId") {
         appId = urlParam[1];
 
-        // Setup the page heading
+        // Setup the page heading and title
         var header = document.getElementsByTagName("header")[0];
         header.innerHTML = header.innerHTML + " : " + appId;
+        document.getElementsByTagName("head")[0].getElementsByTagName("title")[0].innerHTML = appId;
 
-        // Load the locations that data may be grabbed from
-        loadAllowedParserList(appId, loadParsers);
+        // Load the locations that data may be grabbed from and grab from them
+        loadAllowedScraperList(loadScrapers);
 
-        function loadParsers(htmlParsers) {
-            for (var parserUrl in htmlParsers) {
-                // Pull in the parsing function and load data associated with it once it is loaded
-                loadScript(htmlParsers[parserUrl], parserUrl, runParser);
+        function loadScrapers(htmlScrapers) {
+            for (var entry in htmlScrapers) {
+                // Pull in the scraping function and load data associated with it once the object is loaded
+                loadScript(htmlScrapers[entry], runScraper);
             }
 
-            function loadScript(parserName, parserUrl, callback) {
-                // Adding the script tag to the head as suggested before
+            function loadScript(scraperName, callback) {
                 var head = document.getElementsByTagName('head')[0];
                 var script = document.createElement('script');
-
-                script.src = "../domain/" + parserName + ".js";
-                script.onload = function() {callback(parserName, parserUrl)};
-
+                script.src = "../domain/" + scraperName + ".js";
+                script.onload = function() {callback(scraperName)};
                 head.appendChild(script);
             }
 
-            // Loads the styling specific to the scraper table into the document head
-            function loadStyle(parserName) {
-                // Adding the script tag to the head as suggested before
-                var head = document.getElementsByTagName('head')[0];
-                var style = document.createElement('style');
-                style.innerHTML = window[parserName]().style;
-                head.appendChild(style);
-            }
+            function runScraper (scraperName) {
+                var scraper = window[scraperName];
+                extend(scraper, Scraper); // All scrapers require the functions defined in Scraper
+                scraper = new scraper();
 
-            function runParser (parserName, parserUrl) {
-                // Load the style now that we have the parser
-                loadStyle(parserName);
+                // Load the style now that we have the scraper
+                loadStyle(scraper.style);
 
                 // Add the empty display table to the display window
-                var parserCaption = window[parserName]().captionText;
-
                 var newTable = document.createElement("table");
-                newTable.setAttribute('id', parserName);
-                newTable.innerHTML = "<caption><a href='" + parserUrl + "' target='_BLANK'>" + parserCaption + "</a></caption><thead class='noData'><tr><th>No data available yet. Click heading for manual check</th></tr></thead>";
+                newTable.setAttribute('id', scraperName);
+                newTable.innerHTML = "<caption><a href='" + scraper.url(appId) + "' target='_BLANK'>" + scraper.captionText + "</a></caption><thead class='noData'><tr><th>No data available yet. Click heading for manual check</th></tr></thead>";
                 document.body.appendChild(newTable);
 
                 // get DOM for the url and process it using the provided function
                 var xhr = new XMLHttpRequest();
-                xhr.open("GET", parserUrl, true);
-                xhr.onload = function(){window[parserName]().run(this.response)};
+                xhr.open("GET", scraper.url(appId), true);
+                xhr.onload = function(){scraper.display(this.response)};
                 xhr.responseType = "document";
                 xhr.send();
 
+            }
+
+            // Loads the styling specific to the scraper table into the document head
+            function loadStyle(scraperStyle) {
+                var head = document.getElementsByTagName('head')[0];
+                var style = document.createElement('style');
+                style.innerHTML = scraperStyle;
+                head.appendChild(style);
             }
         }
 
@@ -68,13 +67,6 @@ window.onload = function() {
         getImageFromJson("7 Day Memory Usage Chart (MB)", "https://appengine.google.com/dashboard/stats?type=9&window=7&app_id=s~" + appId);
     }
 };
-
-
-// removes the given element from the page
-function removeElement(element) {
-    element && element.parentNode && element.parentNode.removeChild(element);
-}
-
 
 // produces an html image from a gae dashboard/stats json file containing a url
 function getImageFromJson(name, url) {
@@ -90,10 +82,17 @@ function getImageFromJson(name, url) {
 }
 
 
-// put the given parsed data into the data with the label id
+// put the given parsed data into the view table with the given id
 function insertData(scraperName, data, callback) {
-    var newContent = document.getElementById(scraperName);          // Find the table to put data in
-    removeElement(newContent.getElementsByTagName("caption")[0]);   // Remove the table placeholder
+    var newContent = document.getElementById(scraperName);  // Find the table to put data in
+    var placeholder = newContent.getElementsByTagName("caption")[0]
+    removeElement(placeholder);   // Remove the table placeholder
     newContent.innerHTML = data;
     if (callback){callback();}
+}
+
+
+//
+function removeElement(element) {
+    element && element.parentNode && element.parentNode.removeChild(element);
 }

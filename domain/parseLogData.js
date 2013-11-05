@@ -1,16 +1,21 @@
 //
 function parseLogData() {
+    this.url = function(appId) { return "https://appengine.google.com/logs?app_id=s~" + appId + "&severity_level_override=0&severity_level=3&limit=200"; }
     this.captionText = "Error Logs";
-
     this.style = "#parseLogData #log-uri {width: 60%;}" +
                  "#parseLogData #log-code {width: 5%;}" +
                  "#parseLogData #log-newest {width: 15%;}" +
                  "#parseLogData #log-earliest {width: 15%;}" +
                  "#parseLogData #log-count {width: 5%;}";
+    this.settingsDefaults = {
+            minDisplayThreshhold:5,
+            frequentLevel:20,
+            overloadLevel:200
+        };
 
-    this.run = function(doc) {
+
+    this.process = function(doc, callback) {
         var self = this;
-
 
         // Initialize the parsed data containers
         self.errors500 = {};
@@ -119,8 +124,7 @@ function parseLogData() {
                 "<th id='log-earliest'>Earliest Occurrence</th><th id='log-count'>Count</th>" +
                 "</tr></thead>";
 
-            // Insert the parsed data into the viewing tab
-            insertData("parseLogData", "<caption><a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a></caption>" + tableHead + parsedData);
+            callback("<caption><a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a></caption>" + tableHead + parsedData);
         });
 
         function buildUriEntry (cssClass, uri, errorNum, path, latestDate, oldestDate, count) {
@@ -225,6 +229,4 @@ function parseLogData() {
             }
         }
     }
-
-    return this;
 }

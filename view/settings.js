@@ -9,14 +9,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Get all available parsers
-    var htmlParsers = loadParserList("just want the function names");
+    // Get all available scrapers
+    var scrapers = loadScraperList();
 
-    // Add the html entries for each enable/disable parser button
+    // Add the html entries for each enable/disable scraper button
     var table = document.getElementById("scraperToggles").getElementsByTagName("tbody")[0];
-    for (var url in htmlParsers) {
+    for (var entry in scrapers) {
         var row = document.createElement("tr");
-        row.innerHTML = "<tr><td>" + htmlParsers[url] + "</td><td class='settingsValueCell'><button class='scraperToggles' id='" + htmlParsers[url] + "'></button></td></tr>";
+        row.innerHTML = "<tr><td>" + scrapers[entry] + "</td><td class='settingsValueCell'><button class='scraperToggles' id='" + scrapers[entry] + "'></button></td></tr>";
         table.appendChild(row);
     }
 

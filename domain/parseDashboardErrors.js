@@ -1,17 +1,17 @@
 //
 function parseDashboardErrors() {
+    this.url = function(appId) { return "https://appengine.google.com/dashboard?app_id=s~" + appId; }
     this.captionText = 'Dashboard Error List';
-
     this.style = "#parseDashboardErrors #db-errors-uri {width: 87%;}" +
                  "#parseDashboardErrors #db-errors-count {width: 5%;}" +
                  "#parseDashboardErrors #db-errors-pc-error {width: 8%;}" +
                  "#parseDashboardErrors #db-errors-pc-error span {font-weight: normal;}";
 
-    this.run = function(doc) {
+    this.process = function(doc, callback) {
         // Get the operations table
         var table = doc.getElementById("ae-dash-errors");
 
-        table.getElementsByTagName("caption")[0].getElementsByTagName("strong")[0].innerHTML = "<a href='" + doc.URL + "' target='_BLANK'>" + self.captionText + "</a>";
+        table.getElementsByTagName("caption")[0].getElementsByTagName("strong")[0].innerHTML = "<a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a>";
 
         // Remove the help icons
         var icons = table.getElementsByClassName("ae-help-icon");
@@ -55,66 +55,60 @@ function parseDashboardErrors() {
 
         }
 
-        var result = table.innerHTML;
-
-        // Insert the parsed data into the viewing tab. Add button handlers when objects are in the document
-        insertData("parseDashboardErrors", result, applyHandlers);
-
-        // Applies the handlers for the entry buttons that hide the specific entry
-        function applyHandlers() {
-            var buttons = document.querySelectorAll('.hide-dashboard-row')
-            chrome.storage.local.get('hiddenUriList', function(result) {
-                var uriList = result.hiddenUriList;
-
-                for (var i = buttons.length; i-- > 0;) {
-                    var hid = false;
-                    if (uriList != null) {
-                        for (var j = uriList.length; j-- > 0 && hid == false;) {
-                            // If the row is in the hide list then potentially hide it
-                            if (uriList[j].uri == buttons[i].value) {
-                                // Remove the entry if the entry is older than a week (604800000ms)
-                                if (new Date().getTime() - uriList[j].time > 604800000) {
-                                    uriList.remove(j);
-                                    // Update the storage
-                                    chrome.storage.local.set({hiddenUriList: uriList});
-                                // Remove the row if the entry is less than a week old
-                                } else {
-                                    removeElement(buttons[i].parentNode.parentNode);
-                                }
-                                hid = true;
-                            }
-                        }
-                    }
-                    // Add an event listener if the row wasn't removed
-                    if (hid == false) {
-                        (function(button) {
-                            buttons[i].addEventListener('click',
-                                function() {
-                                    // add this URI to the hidden urls storage
-                                    var uri = button.value;
-                                    var time = new Date().getTime();
-                                    chrome.storage.local.get('hiddenUriList', function(result) {
-                                        var uriList = result.hiddenUriList;
-                                        if (uriList == null) {
-                                            uriList = [];
-                                        }
-                                        uriList.push({uri: uri, time: time});
-
-                                        chrome.storage.local.set({hiddenUriList: uriList}, function() {
-                                            alert("the uri will be hidden for 7 days");
-                                        });
-                                    });
-
-                                    // Remove the row from the page
-                                    removeElement(button.parentNode.parentNode);
-                                }
-                            );
-                        } (buttons[i]))
-                    }
-                }
-            });
-        }
+        callback(table.innerHTML);
     }
 
-    return this;
+    this.postProcess = function () {
+        var buttons = document.querySelectorAll('.hide-dashboard-row')
+        chrome.storage.local.get('hiddenUriList', function(result) {
+            var uriList = result.hiddenUriList;
+
+            for (var i = buttons.length; i-- > 0;) {
+                var hid = false;
+                if (uriList != null) {
+                    for (var j = uriList.length; j-- > 0 && hid == false;) {
+                        // If the row is in the hide list then potentially hide it
+                        if (uriList[j].uri == buttons[i].value) {
+                            // Remove the entry if the entry is older than a week (604800000ms)
+                            if (new Date().getTime() - uriList[j].time > 604800000) {
+                                uriList.remove(j);
+                                // Update the storage
+                                chrome.storage.local.set({hiddenUriList: uriList});
+                            // Remove the row if the entry is less than a week old
+                            } else {
+                                removeElement(buttons[i].parentNode.parentNode);
+                            }
+                            hid = true;
+                        }
+                    }
+                }
+                // Add an event listener if the row wasn't removed
+                if (hid == false) {
+                    (function(button) {
+                        buttons[i].addEventListener('click',
+                            function() {
+                                // add this URI to the hidden urls storage
+                                var uri = button.value;
+                                var time = new Date().getTime();
+                                chrome.storage.local.get('hiddenUriList', function(result) {
+                                    var uriList = result.hiddenUriList;
+                                    if (uriList == null) {
+                                        uriList = [];
+                                    }
+                                    uriList.push({uri: uri, time: time});
+
+                                    chrome.storage.local.set({hiddenUriList: uriList}, function() {
+                                        alert("the uri will be hidden for 7 days");
+                                    });
+                                });
+
+                                // Remove the row from the page
+                                removeElement(button.parentNode.parentNode);
+                            }
+                        );
+                    } (buttons[i]))
+                }
+            }
+        });
+    }
 }

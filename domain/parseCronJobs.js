@@ -1,11 +1,11 @@
 //
 function parseCronJobs() {
+    this.url = function(appId) { return "https://appengine.google.com/cron?app_id=s~" + appId; }
     this.captionText = "Cron Jobs (First page only)";
-
     this.style = "#parseCronJobs #cron-name {width: 65%;}" +
                  "#parseCronJobs #cron-state {width: 35%;}";
 
-    this.run = function(doc) {
+    this.process = function(doc, callback) {
         // Get the cron jobs table
         // todo:may have to eventually account for multiple pages
         var table = doc.getElementById("ae-cronjobs-table");
@@ -31,11 +31,7 @@ function parseCronJobs() {
                 row.setAttribute("style", "background-color: #ac6f65;")
             }
         }
-        var result = table.innerHTML;
 
-        // Insert the parsed data into the viewing tab
-        insertData("parseCronJobs", "<caption><a href='" + doc.URL + "' target='_BLANK'>" + self.captionText + "</a></caption>" + result);
+        callback("<caption><a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a></caption>" + table.innerHTML);
     }
-
-    return this;
 }
