@@ -55,8 +55,9 @@ Scraper.prototype = {
     //
     url: function(appId) { return "No Url Set For Scraper " + this.constructor.name; },
 
-/*
-    getSettings: function(callback) {
+
+    getSettings: function() {
+        /*
         var settings = this.settingsNames;
         // get the data from storage if possible. will be keyed to the scraper object name
         chrome.storage.local.get(this.constructor.name + 'Settings', function(result) {
@@ -69,8 +70,10 @@ Scraper.prototype = {
 
             callback(settings);
         });
+        */
+        return this.settingsDefaults;
     },
-*/
+
     //
     process: function(doc, callback) { return "No Run Logic Set For Scraper " + this.constructor.name; },
 
