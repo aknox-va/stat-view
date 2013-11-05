@@ -2,7 +2,11 @@
 function parseLogData() {
     this.captionText = "Error Logs";
 
-    this.style = "";
+    this.style = "#parseLogData #log-uri {width: 60%;}" +
+                 "#parseLogData #log-code {width: 5%;}" +
+                 "#parseLogData #log-newest {width: 15%;}" +
+                 "#parseLogData #log-earliest {width: 15%;}" +
+                 "#parseLogData #log-count {width: 5%;}";
 
     this.run = function(doc) {
         var self = this;
@@ -110,7 +114,10 @@ function parseLogData() {
                 }
             }
 
-            var tableHead = "<thead></tr><th>URI</th><th>Code</th><th>Latest Occurrence</th><th>Earliest Occurrence</th><th>#Occurrences</th><tr></thead>";
+            var tableHead = "<thead><tr>" +
+                "<th id='log-uri'>URI</th><th id='log-code'>Code</th><th id='log-newest'>Latest Occurrence</th>" +
+                "<th id='log-earliest'>Earliest Occurrence</th><th id='log-count'>Count</th>" +
+                "</tr></thead>";
 
             // Insert the parsed data into the viewing tab
             insertData("parseLogData", "<caption><a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a></caption>" + tableHead + parsedData);

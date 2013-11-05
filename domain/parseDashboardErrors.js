@@ -1,10 +1,13 @@
 //
 function parseDashboardErrors() {
-    self.captionText = 'Dashboard Error List';
+    this.captionText = 'Dashboard Error List';
 
-    self.style = "";
+    this.style = "#parseDashboardErrors #db-errors-uri {width: 87%;}" +
+                 "#parseDashboardErrors #db-errors-count {width: 5%;}" +
+                 "#parseDashboardErrors #db-errors-pc-error {width: 8%;}" +
+                 "#parseDashboardErrors #db-errors-pc-error span {font-weight: normal;}";
 
-    self.run = function(doc) {
+    this.run = function(doc) {
         // Get the operations table
         var table = doc.getElementById("ae-dash-errors");
 
@@ -19,6 +22,13 @@ function parseDashboardErrors() {
         // Run through each row in the error table(s?)
         // todo: google has three error tables right now, but they all have the same id. need to be able to differentiate between tables instead of grabbing the first
         var rows = table.getElementsByTagName("tr");
+
+        // Add IDs to the th elements
+        var thArray = rows[0].getElementsByTagName("th");
+        thArray[0].id = "db-errors-uri";
+        thArray[1].id = "db-errors-count";
+        thArray[2].id = "db-errors-pc-error";
+
         // --i skips row 0
         for (var i = rows.length; --i > 0;) {
             var row = rows[i];

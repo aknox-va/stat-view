@@ -40,9 +40,6 @@ function <scraper function name in the above array>(doc) {
 
     self.style = "<css code to format this table. prefix #<scraper function name> to each entry to ensure it only affect the table for this scraper>"
 
-    // No doc to parse so just return the caption text
-    if (!doc) { return caption; }
-
     // DATA PROCESSING CODE GOES HERE
 
     var result = <the formatted data that will be placed in the display table>

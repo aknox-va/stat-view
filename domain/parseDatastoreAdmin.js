@@ -1,10 +1,10 @@
 //
 function parseDatastoreAdmin(doc) {
-    self.captionText = "Datastore Admin - Completed Operation Errors";
+    this.captionText = "Datastore Admin - Completed Operation Errors";
 
-    self.style = "";
+    this.style = "";
 
-    self.run = function(doc) {
+    this.run = function(doc) {
         // Get the operations table
         var table = doc.getElementById("operations");
         var rows = table.getElementsByTagName("tr");

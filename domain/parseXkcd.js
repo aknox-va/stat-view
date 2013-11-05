@@ -5,9 +5,6 @@ function parseXkcd() {
     this.style = "";
 
     this.run = function (doc) {
-        // No doc to parse so just return the caption text
-        if (!doc) { return caption; }
-
         // Get the xkcd image
         var result = doc.getElementById("comic").innerHTML;
 

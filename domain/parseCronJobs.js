@@ -1,14 +1,20 @@
 //
 function parseCronJobs() {
-    self.captionText = "Cron Jobs (First page only)";
+    this.captionText = "Cron Jobs (First page only)";
 
-    self.style = "";
+    this.style = "#parseCronJobs #cron-name {width: 65%;}" +
+                 "#parseCronJobs #cron-state {width: 35%;}";
 
-    self.run = function(doc) {
+    this.run = function(doc) {
         // Get the cron jobs table
         // todo:may have to eventually account for multiple pages
         var table = doc.getElementById("ae-cronjobs-table");
         var rows = table.getElementsByTagName("tr");
+
+        // Add IDs to the th elements
+        var thArray = rows[0].getElementsByTagName("th");
+        thArray[0].id = "cron-name";
+        thArray[1].id = "cron-state";
 
         // Run through each row in the operations table and grab data for rows with errors
         // --i skips row 0 (the headings)
