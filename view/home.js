@@ -18,28 +18,17 @@ window.onload = function() {
         function loadScrapers(htmlScrapers) {
             for (var entry in htmlScrapers) {
                 // Pull in the scraping function and load data associated with it once the object is loaded
-                loadScript(htmlScrapers[entry], runScraper);
+                loadScraper(htmlScrapers[entry], runScraper);
             }
 
-            function loadScript(scraperName, callback) {
-                var head = document.getElementsByTagName('head')[0];
-                var script = document.createElement('script');
-                script.src = "../domain/" + scraperName + ".js";
-                script.onload = function() {callback(scraperName)};
-                head.appendChild(script);
-            }
-
-            function runScraper (scraperName) {
-                var scraper = window[scraperName];
-                extend(scraper, Scraper); // All scrapers require the functions defined in Scraper
-                scraper = new scraper();
+            function runScraper (scraper) {
 
                 // Load the style now that we have the scraper
                 loadStyle(scraper.style);
 
                 // Add the empty display table to the display window
                 var newTable = document.createElement("table");
-                newTable.setAttribute('id', scraperName);
+                newTable.setAttribute('id', scraper.name());
                 newTable.innerHTML = "<caption><a href='" + scraper.url(appId) + "' target='_BLANK'>" + scraper.captionText + "</a></caption><thead class='noData'><tr><th>No data available yet. Click heading for manual check</th></tr></thead>";
                 document.body.appendChild(newTable);
 
@@ -79,20 +68,4 @@ function getImageFromJson(name, url) {
         }
     }
     xhr.send();
-}
-
-
-// put the given parsed data into the view table with the given id
-function insertData(scraperName, data, callback) {
-    var newContent = document.getElementById(scraperName);  // Find the table to put data in
-    var placeholder = newContent.getElementsByTagName("caption")[0]
-    removeElement(placeholder);   // Remove the table placeholder
-    newContent.innerHTML = data;
-    if (callback){callback();}
-}
-
-
-//
-function removeElement(element) {
-    element && element.parentNode && element.parentNode.removeChild(element);
 }

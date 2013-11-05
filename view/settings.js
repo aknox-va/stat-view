@@ -67,8 +67,6 @@ document.addEventListener('DOMContentLoaded', function() {
         );
     }
 
-    // Add other general settings handlers
-
 
     // Add a listener for the add appId button
     document.getElementById("addApp").addEventListener('click',
@@ -143,13 +141,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // Add tables for all the scrapers' custom settings
+    for (var entry in scrapers) {
+        loadScraper(scrapers[entry], function(scraper){
+            var scraperTableContents = scraper.getSettingsTable();
+            if (scraperTableContents) {
+                var customSettingsTable = document.createElement("table");
+                customSettingsTable.setAttribute("id", scrapers[entry] + "Settings");
+                customSettingsTable.innerHTML = scraperTableContents;
+                document.body.appendChild(customSettingsTable);
+            }
+        })
+    }
 });
-
-
-// removes the given element from the page
-function removeElement(element) {
-    element && element.parentNode && element.parentNode.removeChild(element);
-}
 
 
 // Adds the given appId to the table of available apps, and sets up the button used to remove the entry

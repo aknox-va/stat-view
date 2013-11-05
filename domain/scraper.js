@@ -1,4 +1,4 @@
-// Create the list of all possible sources to grab data from
+// Create the list of all possible scrapers that can be used to grab data
 function loadScraperList() {
     var scrapers = new Array();
 
@@ -14,7 +14,7 @@ function loadScraperList() {
 }
 
 
-// Returns an associative array of all the urls (keys) the user wants to scrape and their parsing function names (values)
+// Returns an array of function names for all the scrapers the user wants to run
 function loadAllowedScraperList(callback) {
     var scrapers = loadScraperList();
 
@@ -31,59 +31,3 @@ function loadAllowedScraperList(callback) {
         callback(scrapers);
     });
 }
-
-
-//
-function extend(ChildClass, ParentClass) {
-    ChildClass.prototype = new ParentClass();
-    ChildClass.prototype.constructor = ChildClass;
-}
-
-
-// This is the base scraper functionality that is required. All scrapers inherit from this
-var Scraper = function() {
-    //
-    this.captionText = "No Caption Text Set For This Scraper";
-
-    //
-    this.style = "";
-
-    //
-    this.settingsDefaults = {};
-}
-Scraper.prototype = {
-    //
-    url: function(appId) { return "No Url Set For Scraper " + this.constructor.name; },
-
-
-    getSettings: function() {
-        /*
-        var settings = this.settingsNames;
-        // get the data from storage if possible. will be keyed to the scraper object name
-        chrome.storage.local.get(this.constructor.name + 'Settings', function(result) {
-            if (result && result[this.constructor.name + 'Settings']) {
-                // Overwrite  default values with any user values
-                for (var setting in result[this.constructor.name + 'Settings']) {
-                    settings[setting] = result[this.constructor.name + 'Settings'][setting];
-                }
-            }
-
-            callback(settings);
-        });
-        */
-        return this.settingsDefaults;
-    },
-
-    //
-    process: function(doc, callback) { return "No Run Logic Set For Scraper " + this.constructor.name; },
-
-    //
-    postProcess: function() { return null; },
-
-    //
-    display: function(doc) {
-        var name = this.constructor.name;
-        this.process(doc, function(tableContents) { insertData(name, tableContents, this.postProcess); });
-    }
-}
-

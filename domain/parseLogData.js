@@ -14,6 +14,11 @@ function parseLogData() {
             maxNumDaysChecked:3
         };
 
+    //
+    this.getSettingsTable = function() {
+        return "no settings yet";
+    },
+
 
     this.process = function(doc, callback) {
         var self = this;
@@ -24,7 +29,7 @@ function parseLogData() {
         self.errorsOther = {};
 
         // Get the setting that details the maximum log age
-        self.oldestAllowedDate = new Date(new Date().getTime() - this.getSettings().maxNumDaysChecked*24*60*60*1000);    // Set oldest date to 3 days ago
+        self.oldestAllowedDate = new Date(new Date().getTime() - this.getSettings(null).maxNumDaysChecked*24*60*60*1000);    // Set oldest date to 3 days ago
 
 
         // Process the first page
