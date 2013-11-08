@@ -82,16 +82,6 @@ function getImageFromJson(name, url) {
 }
 
 
-// put the given parsed data into the view table with the given id
-function insertData(scraperName, data, callback) {
-    var newContent = document.getElementById(scraperName);  // Find the table to put data in
-    var placeholder = newContent.getElementsByTagName("caption")[0]
-    removeElement(placeholder);   // Remove the table placeholder
-    newContent.innerHTML = data;
-    if (callback){callback();}
-}
-
-
 //
 function removeElement(element) {
     element && element.parentNode && element.parentNode.removeChild(element);

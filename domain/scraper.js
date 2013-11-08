@@ -78,12 +78,19 @@ Scraper.prototype = {
     process: function(doc, callback) { return "No Run Logic Set For Scraper " + this.constructor.name; },
 
     //
-    postProcess: function() { return null; },
+    onLoad: function() { return null; },
 
     //
     display: function(doc) {
+        var self = this;
         var name = this.constructor.name;
-        this.process(doc, function(tableContents) { insertData(name, tableContents, this.postProcess); });
+        this.process(doc, function(tableContents) {
+            var newContent = document.getElementById(name);                 // Find the table to put data in
+            var placeholder = newContent.getElementsByTagName("caption")[0] // Find the placeholder entry
+            removeElement(placeholder);                                     // Remove the placeholder entry
+            newContent.innerHTML = tableContents;                           // Display the new data
+            self.onLoad();
+        });
     }
 }
 

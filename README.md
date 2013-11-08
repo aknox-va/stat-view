@@ -31,7 +31,7 @@ function <name listed in scraper_list>() {
         callback("<caption><a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a></caption>" + result);
     }
 
-    this.postProcess() {
+    this.onLoad = function () {
         <code you want to run after your html has been added to the view window>
     }
 

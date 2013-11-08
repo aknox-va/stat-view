@@ -58,7 +58,7 @@ function parseDashboardErrors() {
         callback(table.innerHTML);
     }
 
-    this.postProcess = function () {
+    this.onLoad = function () {
         var buttons = document.querySelectorAll('.hide-dashboard-row')
         chrome.storage.local.get('hiddenUriList', function(result) {
             var uriList = result.hiddenUriList;
