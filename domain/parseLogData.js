@@ -48,7 +48,8 @@ function parseLogData() {
                     var cssClass = "errors500";
                     if (self.errors500[newestErrorUri].count >= 10) {
                         cssClass = "errors500-frequent"
-                    } else if (self.errors500[newestErrorUri].count >= 100) {
+                    }
+                    if (self.errors500[newestErrorUri].count >= 100) {
                         cssClass = "errors500-overload"
                     }
                     parsedData += buildUriEntry (cssClass, newestErrorUri, self.errors500[newestErrorUri].errorNum,
@@ -78,7 +79,8 @@ function parseLogData() {
                     var cssClass = "errors400";
                     if (self.errors400[newestErrorUri].count >= 10) {
                         cssClass = "errors400-frequent"
-                    } else if (self.errors400[newestErrorUri].count >= 100) {
+                    }
+                    if (self.errors400[newestErrorUri].count >= 100) {
                         cssClass = "errors400-overload"
                     }
                     parsedData += buildUriEntry (cssClass, newestErrorUri, self.errors400[newestErrorUri].errorNum,
@@ -107,7 +109,8 @@ function parseLogData() {
                     var cssClass = "errorsOther";
                     if (self.errorsOther[newestErrorUri].count >= 10) {
                         cssClass = "errorsOther-frequent"
-                    } else if (self.errorsOther[newestErrorUri].count >= 100) {
+                    }
+                    if (self.errorsOther[newestErrorUri].count >= 100) {
                         cssClass = "errorsOther-overload"
                     }
                     parsedData += buildUriEntry (cssClass, newestErrorUri, self.errorsOther[newestErrorUri].errorNum,
