@@ -130,7 +130,7 @@ function parseLogData() {
                 "<th id='log-earliest'>Earliest Occurrence</th><th id='log-count'>Count</th>" +
                 "</tr></thead>";
 
-            callback("<caption><a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a></caption>" + tableHead + parsedData);
+            callback("<caption><a href='" + doc.URL + "' target='_BLANK'>" + self.captionText + "</a></caption>" + tableHead + parsedData);
         });
 
         function buildUriEntry (cssClass, uri, errorNum, path, latestDate, oldestDate, count) {

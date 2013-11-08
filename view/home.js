@@ -36,7 +36,7 @@ window.onload = function() {
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", scraper.url(appId), true);
                 xhr.onload = function(){scraper.display(this.response)};
-                xhr.responseType = "document";
+                xhr.responseType = scraper.scrapeType;
                 xhr.send();
 
             }
@@ -49,23 +49,11 @@ window.onload = function() {
                 head.appendChild(style);
             }
         }
-
-
-        // dashboard/stats return json so it needs to be handled differently
-        getImageFromJson("7 Day Error Details Chart", "https://appengine.google.com/dashboard/stats?type=4&window=7&app_id=s~" + appId);
-        getImageFromJson("7 Day Memory Usage Chart (MB)", "https://appengine.google.com/dashboard/stats?type=9&window=7&app_id=s~" + appId);
     }
 };
 
-// produces an html image from a gae dashboard/stats json file containing a url
-function getImageFromJson(name, url) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
-            var newContent = document.getElementById(name);
-            newContent.innerHTML = "<caption>" + name + "</caption><img src='" + JSON.parse(xhr.responseText).chart_url + "' />";
-        }
-    }
-    xhr.send();
+
+//
+function removeElement(element) {
+    element && element.parentNode && element.parentNode.removeChild(element);
 }
