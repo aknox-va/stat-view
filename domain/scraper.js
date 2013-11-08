@@ -9,6 +9,8 @@ function loadScraperList() {
     scrapers[scrapers.length] = "parseTaskQueues";
     scrapers[scrapers.length] = "parseDashboardErrors";
     scrapers[scrapers.length] = "parseLogData";
+    scrapers[scrapers.length] = "chart7DErrorDetails";
+    scrapers[scrapers.length] = "chart7DMemoryUsage";
 
     return scrapers;
 }
@@ -42,20 +44,22 @@ function extend(ChildClass, ParentClass) {
 
 // This is the base scraper functionality that is required. All scrapers inherit from this
 var Scraper = function() {
-    //
+    // The type of file that data is going to be scraped from. Override this if not scraping an html page
+    this.scrapeType = "document";
+    // Text that describes this scraper. Override This
     this.captionText = "No Caption Text Set For This Scraper";
 
-    //
+    // CSS specifically for styling the data returned by this scraper. Override This
     this.style = "";
 
-    //
+    // The default values for any settings needed solely by this scraper. Override This
     this.settingsDefaults = {};
 }
 Scraper.prototype = {
-    //
+    // The url to scrape data from. Override This
     url: function(appId) { return "No Url Set For Scraper " + this.constructor.name; },
 
-
+    //
     getSettings: function() {
         /*
         var settings = this.settingsNames;
@@ -74,13 +78,13 @@ Scraper.prototype = {
         return this.settingsDefaults;
     },
 
-    //
+    // The function that does all the scraping and formatting of the raw data. Override This
     process: function(doc, callback) { return "No Run Logic Set For Scraper " + this.constructor.name; },
 
-    //
+    // A callback that will run once the data returned by the process function has been displayed on screen. Override This
     onLoad: function() { return null; },
 
-    //
+    // Displays the scrapers formatted data to the user
     display: function(doc) {
         var self = this;
         var name = this.constructor.name;
