@@ -1,0 +1,102 @@
+html {
+    background-color: #a3bbbf;
+    font-size: 14px;
+}
+
+header {
+    background-color: #698495;
+    border-bottom: #303d48 solid 0.2em;
+    color: #151e2b;
+    font-weight: bold;
+}
+
+table {
+    background-color: #7491a4;
+}
+
+table thead {
+    background-color: #546a79;
+    color: #151e2b;
+}
+
+table thead.noData {
+    background-color: #eac4e9;
+    color: #2f0002;
+}
+
+table th {
+    border: #151e2b solid 0.1em;
+}
+
+table td {
+    text-align: left;
+    border: #151e2b solid 0.1em;
+    color: #000000;
+}
+
+table tr.errors500 a:hover,
+table tr.errors500-frequent a:hover,
+table tr.errors500-overload a:hover,
+table tr.errors400 a:hover,
+table tr.errors400-frequent a:hover,
+table tr.errors400-overload a:hover,
+table tr.errorsOther a:hover,
+table tr.errorsOther-frequent a:hover,
+table tr.errorsOther-overload a:hover {
+    color: #000000;
+}
+
+table tr.errors500 { background-color: #d9b5a3; }
+table tr.errors500-frequent { background-color: #ac6f65; }
+table tr.errors500-overload { background-color: #ae433a; }
+
+table tr.errors500 a,
+table tr.errors500-frequent a,
+table tr.errors500-overload a {
+    color: #260002;
+}
+
+table tr.errors400 { background-color: #b0d9d0; }
+table tr.errors400-frequent { background-color: #74aba1; }
+table tr.errors400-overload { background-color: #29a7ae; }
+
+table tr.errors400 a,
+table tr.errors400-frequent a,
+table tr.errors400-overload a {
+    color: #001426;
+}
+
+table tr.errorsOther { background-color: #d4d9b2; }
+table tr.errorsOther-frequent { background-color: #abac65; }
+table tr.errorsOther-overload { background-color: #aeac2d; }
+
+table tr.errorsOther a,
+table tr.errorsOther-frequent a,
+table tr.errorsOther-overload a {
+    color: #262300;
+}
+
+table caption {
+    background-color: #303d48;
+    border-radius: 1em 1em 0 0;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+table caption a {
+    color: #FFFFFF;
+}
+
+table caption a:hover {
+    color: #6c8892;
+}
+
+table a {
+    color: #151e2b;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+table a:hover {
+    color: #d6ddaa;
+}
