@@ -141,7 +141,7 @@ function parseLogData() {
                 "<th id='log-earliest'>Earliest Occurrence</th><th id='log-count'>Count</th>" +
                 "</tr></thead>";
 
-            callback("<caption><a href='" + doc.URL + "' target='_BLANK'>" + self.captionText + "(Last " + settings.maxNumDaysChecked + " Days)" + "</a></caption>"
+            callback("<caption><a href='" + doc.URL + "' target='_BLANK'>" + self.captionText + " (Last " + settings.maxNumDaysChecked + " Days)" + "</a></caption>"
                 + tableHead + parsedData + "<tfoot><tr><td colspan='5'>"+ hiddenCount + " URIs below display threshold of " + settings.minDisplayThreshold + "</td></tr></tfoot>");
         });
 

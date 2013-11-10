@@ -145,13 +145,37 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add tables for all the scrapers' custom settings
     for (var entry in scrapers) {
         loadScraper(scrapers[entry], function(scraper){
-            var scraperTableContents = scraper.getSettingsTable();
-            if (scraperTableContents) {
-                var customSettingsTable = document.createElement("table");
-                customSettingsTable.setAttribute("id", scrapers[entry] + "Settings");
-                customSettingsTable.innerHTML = scraperTableContents;
-                document.body.appendChild(customSettingsTable);
-            }
+            scraper.getSettings(function(settings){
+                if (settings) {
+                    var hasValue = false;
+                    var customSettingsTable = document.createElement("table");
+                    customSettingsTable.setAttribute("id", scraper.name() + "Settings");
+                    customSettingsTable.innerHTML += "<caption>" + scraper.name() + " Settings</caption><thead><tr><th>Setting Name</th><th>Value</th></tr></thead>";
+                    for (var setting in settings) {
+                        customSettingsTable.innerHTML += "<tr><td>" + setting + "</td><td><input type='text' name='" + setting + "' value='" + settings[setting] + "' class='" + scraper.name() + "Setting' /></td></tr>";
+                        hasValue = true;
+                    }
+                    if (hasValue) {
+                        customSettingsTable.innerHTML += "<tfoot><tr><td colspan='2'><button id='save-" + scraper.name() + "'>Save</button></td></tr></tfoot>";
+                        document.body.appendChild(customSettingsTable);
+
+                        // Add handler for saving the settings
+                        var saveButton = document.getElementById("save-" + scraper.name());
+                        var displayedSettings = document.getElementsByClassName(scraper.name() + "Setting");
+                        saveButton.addEventListener('click', function() {
+                            var newSettings = {};
+                            for (var row in displayedSettings) {
+                                var name = displayedSettings[row].name;
+                                var value = displayedSettings[row].value;
+                                newSettings[name] = value;
+                            }
+                            var dic = {};
+                            dic[scraper.name()+"Settings"] = newSettings;
+                            chrome.storage.local.set(dic);
+                        });
+                    }
+                }
+            });
         })
     }
 });
