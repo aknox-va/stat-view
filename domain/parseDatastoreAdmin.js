@@ -3,7 +3,7 @@ function parseDatastoreAdmin() {
     this.url = function(appId) { return "https://ah-builtin-python-bundle-dot-" + appId + ".appspot.com/_ah/datastore_admin/?app_id=s~" + this.appId + "&adminconsolecustompage"; }
     this.captionText = "Datastore Admin - Completed Operation Errors";
 
-    this.process = function(doc, callback) {
+    this.process = function(doc, settings, callback) {
         // Get the operations table
         var table = doc.getElementById("operations");
         var rows = table.getElementsByTagName("tr");

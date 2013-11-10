@@ -6,8 +6,8 @@ A google app engine administration panel information filter and aggregator.
 Adding a new scraper steps:
 
 1. Make sure the url is in the manifest under 'permissions'
-2. Add an entry to the scrapers array in domain/scraper.js with the value being the name of the scraper function/file
-3. Create a javascript file in the domain folder and give it the name you specified in scraper.js. Now create a function in the file with the same name and follow the template listed below
+2. Add an entry to the scrapers array in domain/scraper_list.js with the value being the name of the scraper function/file
+3. Create a javascript file in the domain folder and give it the name you specified in scraper_list.js. Now create a function in the file with the same name and follow the template listed below
 
 function <name listed in scraper_list>() {
     this.url = function(appId) { return "<url from which to grab data>"; }
@@ -22,8 +22,10 @@ function <name listed in scraper_list>() {
             ...
         };
 
-    this.process = function (doc, callback) {
+    this.process = function (doc, settings, callback) {
         <parsing code here, doc is the dom containing the data from the above url>
+        <settings is the list of settings stored in settingsDefaults with values possibly modified by the user>
+        <callback is what you pass the parsed html output to>
 
         var result = <parsed and formatted data to place in the scraper's table>;
 

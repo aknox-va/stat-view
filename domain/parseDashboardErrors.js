@@ -7,7 +7,7 @@ function parseDashboardErrors() {
                  "#parseDashboardErrors #db-errors-pc-error {width: 8%;}" +
                  "#parseDashboardErrors #db-errors-pc-error span {font-weight: normal;}";
 
-    this.process = function(doc, callback) {
+    this.process = function(doc, settings, callback) {
         // Get the operations table
         var table = doc.getElementById("ae-dash-errors");
 
