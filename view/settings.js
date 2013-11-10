@@ -181,7 +181,7 @@ function addAppRow(appId) {
         function() {
             // Move row above preceding row
             var element = document.getElementById("appList-" + appId);
-            if (element.rowIndex > 2){
+            if (element.rowIndex > 1){
                 // Move Element Down
                 element.parentNode.insertBefore(element, element.previousSibling);
 
