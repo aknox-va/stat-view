@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.storage.local.get('appIdList', function(result) {
         if (result != null && result.appIdList != null) {
             var appIdButtons = document.getElementById("appIdButtons")
-            for (var i = result.appIdList.length; i-- > 0;) {
+            var appIdListLength = result.appIdList.length;
+            for (var i = 0; i < appIdListLength; i++) {
                 // Display a new button for the appId
                 var appIdButton = document.createElement("button");
                 appIdButton.innerHTML = result.appIdList[i];

@@ -30,7 +30,7 @@ window.onload = function() {
                 var newTable = document.createElement("table");
                 newTable.setAttribute('id', scraper.name());
                 newTable.innerHTML = "<caption><a href='" + scraper.url(appId) + "' target='_BLANK'>" + scraper.captionText + "</a></caption><thead class='noData'><tr><th>No data available yet. Click heading for manual check</th></tr></thead>";
-                document.body.appendChild(newTable);
+                document.getElementById("content").appendChild(newTable);
 
                 // get DOM for the url and process it using the provided function
                 var xhr = new XMLHttpRequest();
