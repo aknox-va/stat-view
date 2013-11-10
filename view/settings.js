@@ -1,9 +1,9 @@
 // Operations to run when the page data has loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Get the user's appIds from storage and display entrys for them
+    // Get the user's appIds from storage and display entries for them
     chrome.storage.local.get('appIdList', function(result) {
         if (result && result.appIdList) {
-            for (var i = result.appIdList.length; i-- > 0;) {
+            for (var i = 0; i <  result.appIdList.length; i++) {
                 addAppRow(result.appIdList[i]);
             }
         }
@@ -154,30 +154,69 @@ function removeElement(element) {
 
 // Adds the given appId to the table of available apps, and sets up the button used to remove the entry
 function addAppRow(appId) {
-    var appIdTable = document.getElementById("appIds");
+    var appIdTable = document.getElementById("appIds").getElementsByTagName("tbody")[0];
     // Display a new row for the appId
     var appRow = document.createElement("tr");
     appRow.setAttribute("id", "appList-" + appId);
-    appRow.innerHTML = "<td>" + appId + "</td><td class='buttonCell'><button id='remove-" + appId + "'>Remove App</button></td>";
+    appRow.setAttribute("class", "appListEntry");
+    appRow.innerHTML = "<td>" + appId + "</td><td class='buttonCell'><button id='remove-" + appId + "'>Remove App</button></td>" +
+        "<td class='buttonCell'><button class='up'>&#x25B2;</button></td><td class='buttonCell'><button class='down'>&#x25BC;</button></td>";
     appIdTable.appendChild(appRow);
 
     // Add event listener to the remove button
     var removeButton = document.getElementById("remove-" + appId);
     removeButton.addEventListener('click',
         function() {
-            chrome.storage.local.get('appIdList', function(result) {
+            // Stop displaying row in table
+            var row = document.getElementById("appList-" + appId);
+            row.parentNode.removeChild(row);
 
-                // Stop displaying row in table
-                var row = document.getElementById("appList-" + appId);
-                row.parentNode.removeChild(row);
-
-                // Remove appId from stored appId list
-                var appIdIndex = result.appIdList.indexOf(appId);
-                if (appIdIndex != -1) {
-                    result.appIdList.splice(appIdIndex, 1);
-                    chrome.storage.local.set({appIdList: result.appIdList});
-                }
-            });
+            // Save new state
+            saveAppIdList();
         }
     );
+    //
+    var upButton = appRow.getElementsByClassName("up")[0];
+    upButton.addEventListener('click',
+        function() {
+            // Move row above preceding row
+            var element = document.getElementById("appList-" + appId);
+            if (element.rowIndex > 2){
+                // Move Element Down
+                element.parentNode.insertBefore(element, element.previousSibling);
+
+                // Save new state
+                saveAppIdList();
+            }
+        }
+    );
+    //
+    var downButton = appRow.getElementsByClassName("down")[0];
+    downButton.addEventListener('click',
+        function() {
+            // Move row above preceding row
+            var element = document.getElementById("appList-" + appId);
+            var refNode = element.nextSibling;
+            refNode.parentNode.insertBefore(element, refNode.nextSibling);
+            insertAfter(element.nextSibling, element)
+
+            // Save new state
+            saveAppIdList();
+        }
+    );
+    // saves the appId list in the order it currently appears in the settings window
+    function saveAppIdList() {
+        // Create the new appId list
+        var appIdList = [];
+
+        // Get the data from the list being displayed
+        var elements = document.getElementById("appIds").getElementsByClassName("appListEntry");
+        for (var i = 0; i < elements.length; i++) {
+            var name = elements[i].getElementsByTagName("td")[0].innerHTML;
+            appIdList.push(name);
+        }
+
+        // Save the list
+        chrome.storage.local.set({appIdList: appIdList});
+    };
 }

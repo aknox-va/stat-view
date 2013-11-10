@@ -100,3 +100,7 @@ table a {
 table a:hover {
     color: #d6ddaa;
 }
+
+img {
+    width: 90%;
+}
