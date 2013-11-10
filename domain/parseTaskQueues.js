@@ -3,7 +3,7 @@ function parseTaskQueues() {
     this.url = function(appId) { return "https://appengine.google.com/queues?app_id=s~" + appId; }
     this.captionText = "Stuck Task Queues";
 
-    this.process = function (doc, callback) {
+    this.process = function (doc, settings, callback) {
         // Get the operations table
         var table = doc.getElementById("ae-tasks-queue-table");
         table.getElementsByTagName("caption")[0].innerHTML = "<a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a>";

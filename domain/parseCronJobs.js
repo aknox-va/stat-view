@@ -5,7 +5,7 @@ function parseCronJobs() {
     this.style = "#parseCronJobs #cron-name {width: 65%;}" +
                  "#parseCronJobs #cron-state {width: 35%;}";
 
-    this.process = function(doc, callback) {
+    this.process = function(doc, settings, callback) {
         // Get the cron jobs table
         // todo:may have to eventually account for multiple pages
         var table = doc.getElementById("ae-cronjobs-table");

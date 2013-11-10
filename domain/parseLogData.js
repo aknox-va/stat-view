@@ -6,16 +6,16 @@ function parseLogData() {
                  "#parseLogData #log-code {width: 5%;}" +
                  "#parseLogData #log-newest {width: 15%;}" +
                  "#parseLogData #log-earliest {width: 15%;}" +
-                 "#parseLogData #log-count {width: 5%;}";
+                 "#parseLogData #log-count {width: 5%;}" +
+                 "#parseLogData tfoot td {text-align: center;}";
     this.settingsDefaults = {
-            minDisplayThreshhold:5,
+            minDisplayThreshold:5,
             frequentLevel:20,
             overloadLevel:200,
             maxNumDaysChecked:3
         };
 
-
-    this.process = function(doc, callback) {
+    this.process = function(doc, settings, callback) {
         var self = this;
 
         // Initialize the parsed data containers
@@ -24,13 +24,14 @@ function parseLogData() {
         self.errorsOther = {};
 
         // Get the setting that details the maximum log age
-        self.oldestAllowedDate = new Date(new Date().getTime() - this.getSettings().maxNumDaysChecked*24*60*60*1000);    // Set oldest date to 3 days ago
+        self.oldestAllowedDate = new Date(new Date().getTime() - settings.maxNumDaysChecked*24*60*60*1000);    // Set oldest date to 3 days ago
 
 
         // Process the first page
         processPages(doc, function() {
             // Build the response
             var parsedData = "";
+            var hiddenCount = 0;
 
             // Add the 500 errors to the parsed data in order of date
             while (1) {
@@ -45,18 +46,22 @@ function parseLogData() {
                     }
                 }
                 if (self.errors500.hasOwnProperty(newestErrorUri)) {
-                    var cssClass = "errors500";
-                    if (self.errors500[newestErrorUri].count >= 10) {
-                        cssClass = "errors500-frequent"
-                    }
-                    if (self.errors500[newestErrorUri].count >= 100) {
-                        cssClass = "errors500-overload"
-                    }
-                    parsedData += buildUriEntry (cssClass, newestErrorUri, self.errors500[newestErrorUri].errorNum,
-                                                 newestErrorUri, self.errors500[newestErrorUri].latestDate,
-                                                 self.errors500[newestErrorUri].oldestDate,
-                                                 self.errors500[newestErrorUri].count);
 
+                    var cssClass = "errors500";
+                    if (self.errors500[newestErrorUri].count >= settings.frequentLevel) {
+                        cssClass = "errors500-frequent";
+                    }
+                    if (self.errors500[newestErrorUri].count >= settings.overloadLevel) {
+                        cssClass = "errors500-overload";
+                    }
+                    if (self.errors500[newestErrorUri].count < settings.minDisplayThreshold) {
+                        hiddenCount++;
+                    } else{
+                        parsedData += buildUriEntry (cssClass, newestErrorUri, self.errors500[newestErrorUri].errorNum,
+                                                     newestErrorUri, self.errors500[newestErrorUri].latestDate,
+                                                     self.errors500[newestErrorUri].oldestDate,
+                                                     self.errors500[newestErrorUri].count);
+                    }
                     delete self.errors500[newestErrorUri];
                 } else {
                     break;
@@ -77,16 +82,20 @@ function parseLogData() {
                 }
                 if (self.errors400.hasOwnProperty(newestErrorUri)) {
                     var cssClass = "errors400";
-                    if (self.errors400[newestErrorUri].count >= 10) {
-                        cssClass = "errors400-frequent"
+                    if (self.errors400[newestErrorUri].count >= settings.frequentLevel) {
+                        cssClass = "errors400-frequent";
                     }
-                    if (self.errors400[newestErrorUri].count >= 100) {
-                        cssClass = "errors400-overload"
+                    if (self.errors400[newestErrorUri].count >= settings.overloadLevel) {
+                        cssClass = "errors400-overload";
                     }
-                    parsedData += buildUriEntry (cssClass, newestErrorUri, self.errors400[newestErrorUri].errorNum,
-                                                 newestErrorUri, self.errors400[newestErrorUri].latestDate,
-                                                 self.errors400[newestErrorUri].oldestDate,
-                                                 self.errors400[newestErrorUri].count);
+                    if (self.errors400[newestErrorUri].count < settings.minDisplayThreshold) {
+                        hiddenCount++;
+                    } else {
+                        parsedData += buildUriEntry (cssClass, newestErrorUri, self.errors400[newestErrorUri].errorNum,
+                                                     newestErrorUri, self.errors400[newestErrorUri].latestDate,
+                                                     self.errors400[newestErrorUri].oldestDate,
+                                                     self.errors400[newestErrorUri].count);
+                    }
                     delete self.errors400[newestErrorUri];
                 } else {
                     break;
@@ -107,16 +116,20 @@ function parseLogData() {
                 }
                 if (self.errorsOther.hasOwnProperty(newestErrorUri)) {
                     var cssClass = "errorsOther";
-                    if (self.errorsOther[newestErrorUri].count >= 10) {
-                        cssClass = "errorsOther-frequent"
+                    if (self.errorsOther[newestErrorUri].count >= settings.frequentLevel) {
+                        cssClass = "errorsOther-frequent";
                     }
-                    if (self.errorsOther[newestErrorUri].count >= 100) {
-                        cssClass = "errorsOther-overload"
+                    if (self.errorsOther[newestErrorUri].count >= settings.overloadLevel) {
+                        cssClass = "errorsOther-overload";
                     }
-                    parsedData += buildUriEntry (cssClass, newestErrorUri, self.errorsOther[newestErrorUri].errorNum,
-                                                 newestErrorUri, self.errorsOther[newestErrorUri].latestDate,
-                                                 self.errorsOther[newestErrorUri].oldestDate,
-                                                 self.errorsOther[newestErrorUri].count);
+                    if (self.errorsOther[newestErrorUri].count < settings.minDisplayThreshold) {
+                        hiddenCount++;
+                    } else {
+                        parsedData += buildUriEntry (cssClass, newestErrorUri, self.errorsOther[newestErrorUri].errorNum,
+                                                     newestErrorUri, self.errorsOther[newestErrorUri].latestDate,
+                                                     self.errorsOther[newestErrorUri].oldestDate,
+                                                     self.errorsOther[newestErrorUri].count);
+                    }
                     delete self.errorsOther[newestErrorUri];
                 } else {
                     break;
@@ -128,7 +141,8 @@ function parseLogData() {
                 "<th id='log-earliest'>Earliest Occurrence</th><th id='log-count'>Count</th>" +
                 "</tr></thead>";
 
-            callback("<caption><a href='" + doc.URL + "' target='_BLANK'>" + self.captionText + "</a></caption>" + tableHead + parsedData);
+            callback("<caption><a href='" + doc.URL + "' target='_BLANK'>" + self.captionText + " (Last " + settings.maxNumDaysChecked + " Days)" + "</a></caption>"
+                + tableHead + parsedData + "<tfoot><tr><td colspan='5'>"+ hiddenCount + " URIs below display threshold of " + settings.minDisplayThreshold + "</td></tr></tfoot>");
         });
 
         function buildUriEntry (cssClass, uri, errorNum, path, latestDate, oldestDate, count) {
