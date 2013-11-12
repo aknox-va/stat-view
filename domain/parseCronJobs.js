@@ -4,6 +4,9 @@ function parseCronJobs() {
     this.captionText = "Cron Jobs (First page only)";
     this.style = "#parseCronJobs #cron-name {width: 65%;}" +
                  "#parseCronJobs #cron-state {width: 35%;}";
+    this.settingsDefaults = {
+            hide_successful_cron_jobs:0
+        };
 
     this.process = function(doc, settings, callback) {
         // Get the cron jobs table
@@ -25,10 +28,14 @@ function parseCronJobs() {
             var timing = spans[1].innerHTML;
             var status = spans[2].innerHTML;
             if (timing.indexOf("on time") == -1) {
-                row.setAttribute("style", "background-color: #ae433a;")
+                row.setAttribute("style", "background-color: #ac6f65;")
             }
             if (status.indexOf("Success") == -1) {
-                row.setAttribute("style", "background-color: #ac6f65;")
+                row.setAttribute("style", "background-color: #ae433a;")
+            } else {
+                if (settings.hide_successful_cron_jobs > 0) {
+                    removeElement(row);
+                }
             }
         }
 

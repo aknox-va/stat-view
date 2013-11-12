@@ -11,9 +11,29 @@ body {
     text-align: center;
 }
 
-div#content {
-    -webkit-column-count: 2;
-    -webkit-column-gap: 0;
+table {
+    border-spacing: 0;
+    text-align: center;
+}
+
+@media screen and (min-width: 1901px) {
+    div#content {
+        -webkit-column-count: 2;
+        -webkit-column-gap: 0;
+    }
+
+    table {
+        margin: 2em 0;
+        width: 98%;
+        display: inline-table;
+    }
+}
+
+@media screen and (max-width: 1900px) {
+    table {
+        margin: 2em auto;
+        width: 70em;
+    }
 }
 
 header {
@@ -22,14 +42,6 @@ header {
     padding: 0.5em 0;
     text-align: center;
     width: 100%;
-}
-
-table {
-    border-spacing: 0;
-    margin: 2em 0;
-    width: 98%;
-    text-align: center;
-    display: inline-table;
 }
 
 table tr {

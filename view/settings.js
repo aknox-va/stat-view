@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     if (hasValue) {
                         customSettingsTable.innerHTML += "<tfoot><tr><td colspan='2'><button id='save-" + scraper.name() + "'>Save</button></td></tr></tfoot>";
-                        document.body.appendChild(customSettingsTable);
+                        document.getElementById("content").appendChild(customSettingsTable);
 
                         // Add handler for saving the settings
                         var saveButton = document.getElementById("save-" + scraper.name());
@@ -189,7 +189,7 @@ function addAppRow(appId) {
     appRow.setAttribute("id", "appList-" + appId);
     appRow.setAttribute("class", "appListEntry");
     appRow.innerHTML = "<td>" + appId + "</td><td class='buttonCell'><button id='remove-" + appId + "'>Remove App</button></td>" +
-        "<td class='buttonCell'><button class='up'>&#x25B2;</button></td><td class='buttonCell'><button class='down'>&#x25BC;</button></td>";
+        "<td class='buttonCell'><button class='up'>↑</button></td><td class='buttonCell'><button class='down'>↓</button></td>";
     appIdTable.appendChild(appRow);
 
     // Add event listener to the remove button
@@ -226,11 +226,12 @@ function addAppRow(appId) {
             // Move row above preceding row
             var element = document.getElementById("appList-" + appId);
             var refNode = element.nextSibling;
-            refNode.parentNode.insertBefore(element, refNode.nextSibling);
-            insertAfter(element.nextSibling, element)
+            if (refNode) {
+                refNode.parentNode.insertBefore(element, refNode.nextSibling);
 
-            // Save new state
-            saveAppIdList();
+                // Save new state
+                saveAppIdList();
+            }
         }
     );
     // saves the appId list in the order it currently appears in the settings window
