@@ -15,10 +15,10 @@ window.onload = function() {
         // Load the locations that data may be grabbed from and grab from them
         loadAllowedScraperList(loadScrapers);
 
-        function loadScrapers(htmlScrapers) {
-            for (var entry in htmlScrapers) {
+        function loadScrapers(scrapers) {
+            for (var entry in scrapers) {
                 // Pull in the scraping function and load data associated with it once the object is loaded
-                loadScraper(htmlScrapers[entry], runScraper);
+                loadScraper(scrapers[entry], runScraper);
             }
 
             function runScraper (scraper) {
