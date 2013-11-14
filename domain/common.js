@@ -84,15 +84,18 @@ function insertData(scraperName, data, callback) {
 
 
 //
-function loadScraper(scraperName, callback) {
+function loadScraper(scraperInfo, callback) {
+    var url = "../domain/" + scraperInfo.name + ".js";
+    if (scraperInfo.url) { url = scraperInfo.url; }
+
     var head = document.getElementsByTagName('head')[0];
     var script = document.createElement('script');
-    script.src = "../domain/" + scraperName + ".js";
+    script.src = url;
     script.onload = function() {
         // Extend the custom from the base scraper
-        var scraper = window[scraperName];
-        extend(scraper, Scraper); // All scrapers require the functions defined in Scraper
-        callback(new scraper());
+        var scraperFunction = window[scraperInfo.name];
+        extend(scraperFunction, Scraper); // All scrapers require the functions defined in Scraper
+        callback(new scraperFunction());
     };
     head.appendChild(script);
 }

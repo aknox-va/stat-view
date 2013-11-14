@@ -30,6 +30,15 @@
             display: block;
             margin: 0.2em auto;
         }
+        span {
+            width: 100%;
+            display: inline-block;
+        }
+        span input {
+            float: right;
+            width: 35em;
+            display:inline-block;
+        }
         td {
             padding: 3px;
         }
@@ -41,6 +50,33 @@
 <body>
     <header>Settings</header>
     <div id="content">
+        <table id="externalScrapers">
+            <caption>External Scrapers (Hosted on google drive)</caption>
+            <thead>
+                <tr>
+                    <th>Function Name</th>
+                    <th>Google Drive File ID</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>
+                        <input type="text" id="newExternalScraperName" />
+                    </td>
+                    <td>
+                        <input type="text" id="newExternalScraperUrl" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button id="addScraper">Add Scraper</button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+
         <table id="scraperToggles">
             <caption>Toggle Scrapers</caption>
             <thead>

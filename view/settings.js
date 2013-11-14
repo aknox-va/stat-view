@@ -10,62 +10,133 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Get all available scrapers
-    var scrapers = loadScraperList();
+    loadScraperList(function(scrapers) {
+        var external_scraper_table = document.getElementById("externalScrapers").getElementsByTagName("tbody")[0];
+        var toggle_table = document.getElementById("scraperToggles").getElementsByTagName("tbody")[0];
+        for (var entry in scrapers) {
+            // Add entry for existing external scraper if this is an external scraper
+            if (scrapers[entry].url) {
+                var row = document.createElement("tr");
+                row.innerHTML = "<tr><td>" + scrapers[entry].name + "</td><td>" + scrapers[entry].url + "</td></tr>";
+                external_scraper_table.appendChild(row);
+            }
 
-    // Add the html entries for each enable/disable scraper button
-    var table = document.getElementById("scraperToggles").getElementsByTagName("tbody")[0];
-    for (var entry in scrapers) {
-        var row = document.createElement("tr");
-        row.innerHTML = "<tr><td>" + scrapers[entry] + "</td><td class='settingsValueCell'><button class='scraperToggles' id='" + scrapers[entry] + "'></button></td></tr>";
-        table.appendChild(row);
-    }
+            // Add the html entry for this scraper's enable/disable button
+            var row = document.createElement("tr");
+            var externalText = "";
+            if (scrapers[entry].url) {externalText = "External: "}
+            row.innerHTML = "<tr><td>" + externalText + scrapers[entry].name + "</td><td class='settingsValueCell'><button class='scraperToggles' id='" + scrapers[entry].name + "'></button></td></tr>";
+            toggle_table.appendChild(row);
 
-    // Initialize scraper buttons
-    chrome.storage.local.get('scraperToggles', function(result) {
-        var scraperToggles = {};
-        if (result && result.scraperToggles) {
-            scraperToggles = result.scraperToggles;
+
+
+            // Add tables for all the scrapers' custom settings
+            loadScraper(scrapers[entry], function(scraper){
+                scraper.getSettings(function(settings){
+                    if (settings) {
+                        var hasValue = false;
+                        var customSettingsTable = document.createElement("table");
+                        customSettingsTable.setAttribute("id", scraper.name() + "Settings");
+                        customSettingsTable.innerHTML += "<caption>" + scraper.name() + " Settings</caption><thead><tr><th>Setting Name</th><th>Value</th></tr></thead>";
+                        for (var setting in settings) {
+                            customSettingsTable.innerHTML += "<tr><td>" + setting + "</td><td><input type='text' name='" + setting + "' value='" + settings[setting] + "' class='" + scraper.name() + "Setting' /></td></tr>";
+                            hasValue = true;
+                        }
+                        if (hasValue) {
+                            customSettingsTable.innerHTML += "<tfoot><tr><td colspan='2'><button id='save-" + scraper.name() + "'>Save</button></td></tr></tfoot>";
+                            document.getElementById("content").appendChild(customSettingsTable);
+
+                            // Add handler for saving the settings
+                            var saveButton = document.getElementById("save-" + scraper.name());
+                            var displayedSettings = document.getElementsByClassName(scraper.name() + "Setting");
+                            saveButton.addEventListener('click', function() {
+                                var newSettings = {};
+                                for (var row in displayedSettings) {
+                                    var name = displayedSettings[row].name;
+                                    var value = displayedSettings[row].value;
+                                    newSettings[name] = value;
+                                }
+                                var dic = {};
+                                dic[scraper.name()+"Settings"] = newSettings;
+                                chrome.storage.local.set(dic);
+                            });
+                        }
+                    }
+                });
+            })
         }
-        // Get the buttons and set their initial values according to the general settings
+
+        // Initialize scraper buttons
+        chrome.storage.local.get('scraperToggles', function(result) {
+            var scraperToggles = {};
+            if (result && result.scraperToggles) {
+                scraperToggles = result.scraperToggles;
+            }
+            // Get the buttons and set their initial values according to the general settings
+            var buttons = document.getElementsByClassName("scraperToggles");
+            for (var j = buttons.length; j-- > 0;) {
+                // Initialize the button setting
+                if (buttons[j].id in scraperToggles) {
+                    buttons[j].innerHTML = scraperToggles[buttons[j].id];
+                } else {
+                    buttons[j].innerHTML = "ON";
+                }
+            }
+        });
+
+
+        // Add scraper toggle button handlers
         var buttons = document.getElementsByClassName("scraperToggles");
         for (var j = buttons.length; j-- > 0;) {
-            // Initialize the button setting
-            if (buttons[j].id in scraperToggles) {
-                buttons[j].innerHTML = scraperToggles[buttons[j].id];
-            } else {
-                buttons[j].innerHTML = "ON";
-            }
+            // Setup the button click listener
+            buttons[j].addEventListener('click',
+                function() {
+                    var self = this;
+                    chrome.storage.local.get('scraperToggles', function(result) {
+                        // Get the current settings
+                        var scraperToggles = {};
+                        if (result && result.scraperToggles) {
+                            scraperToggles = result.scraperToggles;
+                        }
+                        // Flip the switch
+                        if (!scraperToggles[self.id] || scraperToggles[self.id] == "ON") {
+                            scraperToggles[self.id] = "OFF";
+                        } else {
+                            scraperToggles[self.id] = "ON";
+                        }
+                        // Display the setting change
+                        self.innerHTML = scraperToggles[self.id];
+                        // Store the changed settings
+                        chrome.storage.local.set({scraperToggles: scraperToggles});
+                    });
+                }
+            );
         }
     });
 
+    // add a listener for the add scraper button
+    document.getElementById("addScraper").addEventListener('click',
+        function() {
+            chrome.storage.local.get('externalScrapers', function(result) {
+                var externalScraperList;
+                if (result && result.externalScrapers) {
+                    externalScraperList = result.externalScrapers;
+                } else {
+                    externalScraperList = [];
+                }
 
-    // Add scraper toggle button handlers
-    var buttons = document.getElementsByClassName("scraperToggles");
-    for (var j = buttons.length; j-- > 0;) {
-        // Setup the button click listener
-        buttons[j].addEventListener('click',
-            function() {
-                var self = this;
-                chrome.storage.local.get('scraperToggles', function(result) {
-                    // Get the current settings
-                    var scraperToggles = {};
-                    if (result && result.scraperToggles) {
-                        scraperToggles = result.scraperToggles;
-                    }
-                    // Flip the switch
-                    if (!scraperToggles[self.id] || scraperToggles[self.id] == "ON") {
-                        scraperToggles[self.id] = "OFF";
-                    } else {
-                        scraperToggles[self.id] = "ON";
-                    }
-                    // Display the setting change
-                    self.innerHTML = scraperToggles[self.id];
-                    // Store the changed settings
-                    chrome.storage.local.set({scraperToggles: scraperToggles});
-                });
-            }
-        );
-    }
+                var newScraperName = document.getElementById("newExternalScraperName").value;
+                var newScraperUrl = document.getElementById("newExternalScraperUrl").value;
+                if (newScraperName.length > 0 && newScraperUrl.length > 0) {
+                    newScraperUrl = "https://googledrive.com/host/" + newScraperUrl;
+                    externalScraperList.push({name:newScraperName, url:newScraperUrl});
+                    chrome.storage.local.set({externalScrapers: externalScraperList}, function () {
+                        window.location.reload();   // Reload whole page since custom setting may need to be grabbed
+                    });
+                }
+            });
+        }
+    );
 
 
     // Add a listener for the add appId button
@@ -141,43 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
-
-    // Add tables for all the scrapers' custom settings
-    for (var entry in scrapers) {
-        loadScraper(scrapers[entry], function(scraper){
-            scraper.getSettings(function(settings){
-                if (settings) {
-                    var hasValue = false;
-                    var customSettingsTable = document.createElement("table");
-                    customSettingsTable.setAttribute("id", scraper.name() + "Settings");
-                    customSettingsTable.innerHTML += "<caption>" + scraper.name() + " Settings</caption><thead><tr><th>Setting Name</th><th>Value</th></tr></thead>";
-                    for (var setting in settings) {
-                        customSettingsTable.innerHTML += "<tr><td>" + setting + "</td><td><input type='text' name='" + setting + "' value='" + settings[setting] + "' class='" + scraper.name() + "Setting' /></td></tr>";
-                        hasValue = true;
-                    }
-                    if (hasValue) {
-                        customSettingsTable.innerHTML += "<tfoot><tr><td colspan='2'><button id='save-" + scraper.name() + "'>Save</button></td></tr></tfoot>";
-                        document.getElementById("content").appendChild(customSettingsTable);
-
-                        // Add handler for saving the settings
-                        var saveButton = document.getElementById("save-" + scraper.name());
-                        var displayedSettings = document.getElementsByClassName(scraper.name() + "Setting");
-                        saveButton.addEventListener('click', function() {
-                            var newSettings = {};
-                            for (var row in displayedSettings) {
-                                var name = displayedSettings[row].name;
-                                var value = displayedSettings[row].value;
-                                newSettings[name] = value;
-                            }
-                            var dic = {};
-                            dic[scraper.name()+"Settings"] = newSettings;
-                            chrome.storage.local.set(dic);
-                        });
-                    }
-                }
-            });
-        })
-    }
 });
 
 
