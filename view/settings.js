@@ -17,13 +17,15 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add entry for existing external scraper if this is an external scraper
             if (scrapers[entry].url) {
                 var row = document.createElement("tr");
-                row.innerHTML = "<tr><td>" + scrapers[entry].url + "</td></tr>";
+                row.innerHTML = "<tr><td>" + scrapers[entry].name + "</td><td>" + scrapers[entry].url + "</td></tr>";
                 external_scraper_table.appendChild(row);
             }
 
             // Add the html entry for this scraper's enable/disable button
             var row = document.createElement("tr");
-            row.innerHTML = "<tr><td>" + scrapers[entry].name + "</td><td class='settingsValueCell'><button class='scraperToggles' id='" + scrapers[entry].name + "'></button></td></tr>";
+            var externalText = "";
+            if (scrapers[entry].url) {externalText = "External: "}
+            row.innerHTML = "<tr><td>" + externalText + scrapers[entry].name + "</td><td class='settingsValueCell'><button class='scraperToggles' id='" + scrapers[entry].name + "'></button></td></tr>";
             toggle_table.appendChild(row);
 
 
@@ -123,11 +125,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     externalScraperList = [];
                 }
 
-                var newExternalScraper = document.getElementById("newExternalScraperUrl").value;
-                if (newExternalScraper.length > 0) {
-                    var newScraperName = newExternalScraper.split('/');
-                    newScraperName = newScraperName[newScraperName.length-1].split(".")[0];
-                    externalScraperList.push({name:newScraperName, url:newExternalScraper});
+                var newScraperName = document.getElementById("newExternalScraperName").value;
+                var newScraperUrl = document.getElementById("newExternalScraperUrl").value;
+                if (newScraperName.length > 0 && newScraperUrl.length > 0) {
+                    newScraperUrl = "https://googledrive.com/host/" + newScraperUrl;
+                    externalScraperList.push({name:newScraperName, url:newScraperUrl});
                     chrome.storage.local.set({externalScrapers: externalScraperList}, function () {
                         window.location.reload();   // Reload whole page since custom setting may need to be grabbed
                     });

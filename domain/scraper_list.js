@@ -43,7 +43,7 @@ function loadAllowedScraperList(callback) {
             if (result && result.scraperToggles) { scraperToggles = result.scraperToggles; }
             // Remove unwanted urls
             for (var entry in scrapers) {
-                var scraperName = scrapers[entry];
+                var scraperName = scrapers[entry].name;
                 if (scraperToggles[scraperName] == "OFF") { delete scrapers[entry]; }
             }
 
