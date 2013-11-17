@@ -51,3 +51,21 @@ function loadAllowedScraperList(callback) {
         });
     });
 }
+
+function removeExternalScraper(mouseEvent) {
+    var scraperUrl = mouseEvent.srcElement.value;
+    chrome.storage.local.get('externalScrapers', function(result) {
+        var externalScrapers = {};
+        if (result && result.externalScrapers) { externalScrapers = result.externalScrapers; }
+        // Remove unwanted external scraper from list
+        for (var row in externalScrapers) {
+            if (externalScrapers[row].url == scraperUrl) {
+                delete externalScrapers[row];
+                window.location.reload();   // Reload whole page since custom setting may need to be grabbed
+            }
+        }
+
+        // Save the new list
+        chrome.storage.local.set({externalScrapers: externalScrapers});
+    });
+}

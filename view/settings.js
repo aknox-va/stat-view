@@ -17,8 +17,15 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add entry for existing external scraper if this is an external scraper
             if (scrapers[entry].url) {
                 var row = document.createElement("tr");
-                row.innerHTML = "<tr><td>" + scrapers[entry].name + "</td><td>" + scrapers[entry].url + "</td></tr>";
+                var removeButton = document.createElement("button");
+                removeButton.innerHTML = "Remove";
+                removeButton.value = scrapers[entry].url;
+                row.innerHTML = "<tr><td>" + scrapers[entry].name + "</td><td>" + scrapers[entry].url + "</td><td></td></tr>";
+                row.getElementsByTagName("td")[2].appendChild(removeButton);
                 external_scraper_table.appendChild(row);
+
+                // Setup the handler for removing this external scraper
+                removeButton.addEventListener('click', removeExternalScraper);
             }
 
             // Add the html entry for this scraper's enable/disable button
