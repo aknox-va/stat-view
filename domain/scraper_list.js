@@ -52,8 +52,8 @@ function loadAllowedScraperList(callback) {
     });
 }
 
-function removeExternalScraper(mouseEvent) {
-    var scraperUrl = mouseEvent.srcElement.value;
+function removeExternalScraper(button) {
+    var scraperUrl = button.value;
     chrome.storage.local.get('externalScrapers', function(result) {
         var externalScrapers = {};
         if (result && result.externalScrapers) { externalScrapers = result.externalScrapers; }

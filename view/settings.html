@@ -2,8 +2,13 @@
 <html>
 <head>
     <title>Stat-view Settings</title>
-    <script src="../domain/common.js"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="../libraries/jquery-ui/css/dot-luv/jquery-ui-1.10.3.custom.min.css" />
+    <script src="../libraries/jquery-1.9.1.js"></script>
+    <script src="../libraries/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
+
+    <script src="../domain/common.js"></script>
     <script src="../domain/scraper_list.js"></script>
     <script src="settings.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/styling.css" />
@@ -14,36 +19,9 @@
             margin: 5em auto;
         }
 
-        #addAppIdRow td,
-        td.settingsValueCell,
-        td.buttonCell, {
-            text-align: center;
-        }
-
         div#content {
             -webkit-column-count: 2;
             -webkit-column-gap: 0;
-        }
-
-        input, button {
-            width: 97%;
-            display: block;
-            margin: 0.2em auto;
-        }
-        span {
-            width: 100%;
-            display: inline-block;
-        }
-        span input {
-            float: right;
-            width: 35em;
-            display:inline-block;
-        }
-        td {
-            padding: 3px;
-        }
-        .show-dashboard-row {
-            width: 5em;
         }
     </style>
 </head>

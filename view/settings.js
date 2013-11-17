@@ -3,9 +3,65 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get the user's appIds from storage and display entries for them
     chrome.storage.local.get('appIdList', function(result) {
         if (result && result.appIdList) {
+            // saves the appId list in the order it currently appears in the settings window
+            function saveAppIdList() {
+                // Create the new appId list
+                var appIdList = [];
+
+                // Get the data from the list being displayed
+                var elements = document.getElementById("appIds").getElementsByClassName("appListEntry");
+                for (var i = 0; i < elements.length; i++) {
+                    var name = elements[i].getElementsByTagName("td")[0].innerHTML;
+                    appIdList.push(name);
+                }
+
+                // Save the list
+                chrome.storage.local.set({appIdList: appIdList});
+            }
+
             for (var i = 0; i <  result.appIdList.length; i++) {
                 addAppRow(result.appIdList[i]);
             }
+
+            // Add button click listeners for the table
+            $("button.up")
+                .button()
+                .click(function(event) {
+                    // Move row above preceding row
+                    var element = document.getElementById("appList-" + this.value);
+                    if (element.rowIndex > 1){
+                        // Move Element Down
+                        element.parentNode.insertBefore(element, element.previousSibling);
+
+                        // Save new state
+                        saveAppIdList();
+                    }
+                });
+
+            $("button.down")
+                .button()
+                .click(function(event) {
+                    // Move row above preceding row
+                    var element = document.getElementById("appList-" + this.value);
+                    var refNode = element.nextSibling;
+                    if (refNode) {
+                        refNode.parentNode.insertBefore(element, refNode.nextSibling);
+
+                        // Save new state
+                        saveAppIdList();
+                    }
+                });
+
+            $("button#remove-app-id")
+                .button()
+                .click(function(event) {
+                    // Stop displaying row in table
+                    var row = document.getElementById("appList-" + this.value);
+                    row.parentNode.removeChild(row);
+
+                    // Save new state
+                    saveAppIdList();
+                });
         }
     });
 
@@ -21,12 +77,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 var removeButton = document.createElement("button");
                 removeButton.innerHTML = "Remove";
                 removeButton.value = scrapers[entry].url;
+                removeButton.className = "remove-external-scraper";
                 row.innerHTML = "<tr><td>" + scrapers[entry].name + "</td><td>" + scrapers[entry].url + "</td><td></td></tr>";
                 row.getElementsByTagName("td")[2].appendChild(removeButton);
                 externalScraperFragment.appendChild(row);
-
-                // Setup the handler for removing this external scraper
-                removeButton.addEventListener('click', removeExternalScraper);
             }
 
             // Add the html entry for this scraper's enable/disable button
@@ -35,8 +89,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (scrapers[entry].url) {externalText = "External: "}
             row.innerHTML = "<tr><td>" + externalText + scrapers[entry].name + "</td><td class='settingsValueCell'><button class='scraperToggles' id='" + scrapers[entry].name + "'></button></td></tr>";
             toggleFragment.appendChild(row);
-
-
 
             // Add tables for all the scrapers' custom settings
             loadScraper(scrapers[entry], function(scraper){
@@ -57,17 +109,20 @@ document.addEventListener('DOMContentLoaded', function() {
                             // Add handler for saving the settings
                             var saveButton = document.getElementById("save-" + scraper.name());
                             var displayedSettings = document.getElementsByClassName(scraper.name() + "Setting");
-                            saveButton.addEventListener('click', function() {
-                                var newSettings = {};
-                                for (var row in displayedSettings) {
-                                    var name = displayedSettings[row].name;
-                                    var value = displayedSettings[row].value;
-                                    newSettings[name] = value;
-                                }
-                                var dic = {};
-                                dic[scraper.name()+"Settings"] = newSettings;
-                                chrome.storage.local.set(dic);
-                            });
+
+                            $("button#save-" + scraper.name())
+                                .button()
+                                .click(function( event ) {
+                                    var newSettings = {};
+                                    for (var row in displayedSettings) {
+                                        var name = displayedSettings[row].name;
+                                        var value = displayedSettings[row].value;
+                                        newSettings[name] = value;
+                                    }
+                                    var dic = {};
+                                    dic[scraper.name()+"Settings"] = newSettings;
+                                    chrome.storage.local.set(dic);
+                                });
                         }
                     }
                 });
@@ -101,17 +156,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
         // Add scraper toggle button handlers
-        var buttons = document.getElementsByClassName("scraperToggles");
-        for (var j = buttons.length; j-- > 0;) {
-            // Setup the button click listener
-            buttons[j].addEventListener('click',
-                function() {
+        $("button.scraperToggles")
+            .button()
+            .click(function( event ) {
                     var self = this;
                     chrome.storage.local.get('scraperToggles', function(result) {
                         // Get the current settings
                         var scraperToggles = {};
-                        if (result && result.scraperToggles) {
-                            scraperToggles = result.scraperToggles;
+                        if (result && result.scraperToggles) { scraperToggles = result.scraperToggles;
                         }
                         // Flip the switch
                         if (!scraperToggles[self.id] || scraperToggles[self.id] == "ON") {
@@ -126,12 +178,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
             );
-        }
+
+
+
+
+        // Add remove external scraper button handlers
+        $("button.remove-external-scraper")
+            .button()
+            .click(function(event) {
+                removeExternalScraper(this);
+            });
     });
 
     // add a listener for the add scraper button
-    document.getElementById("addScraper").addEventListener('click',
-        function() {
+    $("button#addScraper")
+        .button()
+        .click(function( event ) {
             chrome.storage.local.get('externalScrapers', function(result) {
                 var externalScraperList;
                 if (result && result.externalScrapers) {
@@ -155,8 +217,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // Add a listener for the add appId button
-    document.getElementById("addApp").addEventListener('click',
-        function() {
+    $("button#addApp")
+        .button()
+        .click(function( event ) {
             chrome.storage.local.get('appIdList', function(result) {
                 var appIdList;
                 if (result == null || result.appIdList == null) {
@@ -197,38 +260,31 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add entries to DOM
             document.getElementById("hiddenUris").appendChild(hiddenUriFragment);
 
-            var buttons = document.querySelectorAll('.show-dashboard-row')
-            chrome.storage.local.get('hiddenUriList', function(result) {
-                var uriList = result.hiddenUriList;
-
-                for (var i = buttons.length; i-- > 0;) {
-                    // Add an event listener if the row wasn't removed
-                    (function(button) {
-                        buttons[i].addEventListener('click',
-                            function() {
-                                // add this URI to the hidden urls storage
-                                var uri = button.value;
-                                chrome.storage.local.get('hiddenUriList', function(result) {
-                                    var uriList = result.hiddenUriList;
-                                    if (uriList == null) { uriList = []; }
-                                    for (var entry in uriList) {
-                                        if (uriList[entry]['uri'] == button.value) {
-                                            delete uriList[entry]
-                                        }
-                                    }
-                                    // Save the updated list
-                                    chrome.storage.local.set({hiddenUriList: uriList});
-                                });
-
-                                // Remove the row from the page
-                                removeElement(button.parentNode.parentNode);
+            // Add the button click listeners
+            $("button.show-dashboard-row")
+                .button()
+                .click(function(event) {
+                    self = this;
+                    var uri = self.value;
+                    chrome.storage.local.get('hiddenUriList', function(result) {
+                        var uriList = result.hiddenUriList;
+                        if (uriList == null) { uriList = []; }
+                        for (var entry in uriList) {
+                            if (uriList[entry]['uri'] == self.value) {
+                                delete uriList[entry]
                             }
-                        );
-                    } (buttons[i]))
-                }
-            });
+                        }
+                        // Save the updated list
+                        chrome.storage.local.set({hiddenUriList: uriList});
+                    });
+
+                    // Remove the row from the page
+                    removeElement(self.parentNode.parentNode);
+                });
         }
     });
+
+
 });
 
 
@@ -239,65 +295,7 @@ function addAppRow(appId) {
     var appRow = document.createElement("tr");
     appRow.setAttribute("id", "appList-" + appId);
     appRow.setAttribute("class", "appListEntry");
-    appRow.innerHTML = "<td>" + appId + "</td><td class='buttonCell'><button id='remove-" + appId + "'>Remove App</button></td>" +
-        "<td class='buttonCell'><button class='up'>↑</button></td><td class='buttonCell'><button class='down'>↓</button></td>";
+    appRow.innerHTML = "<td>" + appId + "</td><td class='buttonCell'><button id='remove-app-id' value='" + appId + "'>Remove App</button></td>" +
+        "<td class='buttonCell'><button class='up' value='" + appId + "'>↑</button></td><td class='buttonCell'><button class='down' value='" + appId + "'>↓</button></td>";
     appIdTable.appendChild(appRow);
-
-    // Add event listener to the remove button
-    var removeButton = document.getElementById("remove-" + appId);
-    removeButton.addEventListener('click',
-        function() {
-            // Stop displaying row in table
-            var row = document.getElementById("appList-" + appId);
-            row.parentNode.removeChild(row);
-
-            // Save new state
-            saveAppIdList();
-        }
-    );
-    //
-    var upButton = appRow.getElementsByClassName("up")[0];
-    upButton.addEventListener('click',
-        function() {
-            // Move row above preceding row
-            var element = document.getElementById("appList-" + appId);
-            if (element.rowIndex > 1){
-                // Move Element Down
-                element.parentNode.insertBefore(element, element.previousSibling);
-
-                // Save new state
-                saveAppIdList();
-            }
-        }
-    );
-    //
-    var downButton = appRow.getElementsByClassName("down")[0];
-    downButton.addEventListener('click',
-        function() {
-            // Move row above preceding row
-            var element = document.getElementById("appList-" + appId);
-            var refNode = element.nextSibling;
-            if (refNode) {
-                refNode.parentNode.insertBefore(element, refNode.nextSibling);
-
-                // Save new state
-                saveAppIdList();
-            }
-        }
-    );
-    // saves the appId list in the order it currently appears in the settings window
-    function saveAppIdList() {
-        // Create the new appId list
-        var appIdList = [];
-
-        // Get the data from the list being displayed
-        var elements = document.getElementById("appIds").getElementsByClassName("appListEntry");
-        for (var i = 0; i < elements.length; i++) {
-            var name = elements[i].getElementsByTagName("td")[0].innerHTML;
-            appIdList.push(name);
-        }
-
-        // Save the list
-        chrome.storage.local.set({appIdList: appIdList});
-    };
 }
