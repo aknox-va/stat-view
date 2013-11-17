@@ -11,8 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Get all available scrapers
     loadScraperList(function(scrapers) {
-        var external_scraper_table = document.getElementById("externalScrapers").getElementsByTagName("tbody")[0];
-        var toggle_table = document.getElementById("scraperToggles").getElementsByTagName("tbody")[0];
+        var externalScraperFragment = document.createDocumentFragment();
+        var toggleFragment = document.createDocumentFragment();
+
         for (var entry in scrapers) {
             // Add entry for existing external scraper if this is an external scraper
             if (scrapers[entry].url) {
@@ -22,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 removeButton.value = scrapers[entry].url;
                 row.innerHTML = "<tr><td>" + scrapers[entry].name + "</td><td>" + scrapers[entry].url + "</td><td></td></tr>";
                 row.getElementsByTagName("td")[2].appendChild(removeButton);
-                external_scraper_table.appendChild(row);
+                externalScraperFragment.appendChild(row);
 
                 // Setup the handler for removing this external scraper
                 removeButton.addEventListener('click', removeExternalScraper);
@@ -33,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var externalText = "";
             if (scrapers[entry].url) {externalText = "External: "}
             row.innerHTML = "<tr><td>" + externalText + scrapers[entry].name + "</td><td class='settingsValueCell'><button class='scraperToggles' id='" + scrapers[entry].name + "'></button></td></tr>";
-            toggle_table.appendChild(row);
+            toggleFragment.appendChild(row);
 
 
 
@@ -72,6 +73,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             })
         }
+
+        // Add the elements to the DOM
+        var externalScraperTable = document.getElementById("externalScrapers").getElementsByTagName("tbody")[0];
+        var toggleTable = document.getElementById("scraperToggles").getElementsByTagName("tbody")[0];
+        externalScraperTable.appendChild(externalScraperFragment);
+        toggleTable.appendChild(toggleFragment);
+
 
         // Initialize scraper buttons
         chrome.storage.local.get('scraperToggles', function(result) {
@@ -171,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var uriList = result.hiddenUriList;
         if (uriList) {
             // Display the entries in the table
-            var hiddenUriTable = document.getElementById("hiddenUris");
+            var hiddenUriFragment = document.createDocumentFragment();
             for (var j = uriList.length; j-- > 0;) {
                 // Remove the entry if the entry is older than a week
                 if (new Date().getTime() - uriList[j].time > 604800000) {
@@ -183,9 +191,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     var row = document.createElement("tr");
                     row.innerHTML = "<td><button class='show-dashboard-row' value='" + uriList[j].uri + "'>Show</button> " + uriList[j].uri + "</td><td>" + new Date(uriList[j].time).toDateString() + "</td>";
-                    hiddenUriTable.appendChild(row);
+                    hiddenUriFragment.appendChild(row);
                 }
             }
+            // Add entries to DOM
+            document.getElementById("hiddenUris").appendChild(hiddenUriFragment);
 
             var buttons = document.querySelectorAll('.show-dashboard-row')
             chrome.storage.local.get('hiddenUriList', function(result) {
