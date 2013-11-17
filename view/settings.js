@@ -1,5 +1,8 @@
 // Operations to run when the page data has loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Style input fields
+    $("input:text").button().addClass("input-text");
+
     // Get the user's appIds from storage and display entries for them
     chrome.storage.local.get('appIdList', function(result) {
         if (result && result.appIdList) {
@@ -93,37 +96,67 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add tables for all the scrapers' custom settings
             loadScraper(scrapers[entry], function(scraper){
                 scraper.getSettings(function(settings){
-                    if (settings) {
-                        var hasValue = false;
-                        var customSettingsTable = document.createElement("table");
-                        customSettingsTable.setAttribute("id", scraper.name() + "Settings");
-                        customSettingsTable.innerHTML += "<caption>" + scraper.name() + " Settings</caption><thead><tr><th>Setting Name</th><th>Value</th></tr></thead>";
-                        for (var setting in settings) {
-                            customSettingsTable.innerHTML += "<tr><td>" + setting + "</td><td><input type='text' name='" + setting + "' value='" + settings[setting] + "' class='" + scraper.name() + "Setting' /></td></tr>";
-                            hasValue = true;
-                        }
-                        if (hasValue) {
-                            customSettingsTable.innerHTML += "<tfoot><tr><td colspan='2'><button id='save-" + scraper.name() + "'>Save</button></td></tr></tfoot>";
-                            document.getElementById("content").appendChild(customSettingsTable);
+                    var hasValue = false;
 
-                            // Add handler for saving the settings
-                            var saveButton = document.getElementById("save-" + scraper.name());
-                            var displayedSettings = document.getElementsByClassName(scraper.name() + "Setting");
+                    // Create the table
+                    var customSettingsTable = document.createElement("table");
+                    customSettingsTable.setAttribute("id", scraper.name() + "Settings");
+/*
+                    var grid = $("#" + scraper.name() + "Settings");
+                    grid.jqGrid({
+                        datatype: "local",
+                        height: 250,
+                        colNames: ['Setting Name', 'Number Value'],
+                        colModel: [{
+                            name: 'setting',
+                            index: 'setting',
+                            width: 60,
+                            sorttype: "string"},
+                        {
+                            name: 'value',
+                            index: 'value',
+                            width: 60,
+                            sorttype: "int"}
+                        ],
+                        caption: scraper.name() + "Settings"
+                    });
 
-                            $("button#save-" + scraper.name())
-                                .button()
-                                .click(function( event ) {
-                                    var newSettings = {};
-                                    for (var row in displayedSettings) {
-                                        var name = displayedSettings[row].name;
-                                        var value = displayedSettings[row].value;
-                                        newSettings[name] = value;
-                                    }
-                                    var dic = {};
-                                    dic[scraper.name()+"Settings"] = newSettings;
-                                    chrome.storage.local.set(dic);
-                                });
-                        }
+                    // Populate the table
+                    var i = 0;
+                    for (var setting in settings) {
+                        grid.jqGrid('addRowData', ++i, {setting:setting, value:settings[setting]});
+                    }
+*/
+
+                    for (var setting in settings) {
+                        customSettingsTable.innerHTML += "<tr><td>" + setting + "</td><td><input type='text' name='" + setting + "' value='" + settings[setting] + "' class='" + scraper.name() + "Setting' /></td></tr>";
+                        hasValue = true;
+                    }
+
+                    if (hasValue) {
+                        customSettingsTable.innerHTML += "<tfoot><tr><td colspan='2'><button id='save-" + scraper.name() + "'>Save</button></td></tr></tfoot>";
+                        document.getElementById("custom-settings").innerHTML += "<h3>" + scraper.name() + " Settings</h3><div>" + customSettingsTable.outerHTML + "</div>";
+                        $("#custom-settings").accordion("refresh");
+
+                        // Add handler for saving the settings
+                        var displayedSettings = document.getElementsByClassName(scraper.name() + "Setting");
+
+                        $("button#save-" + scraper.name())
+                            .button()
+                            .click(function( event ) {
+                                var newSettings = {};
+                                for (var row in displayedSettings) {
+                                    var name = displayedSettings[row].name;
+                                    var value = displayedSettings[row].value;
+                                    newSettings[name] = value;
+                                }
+                                var dic = {};
+                                dic[scraper.name()+"Settings"] = newSettings;
+                                chrome.storage.local.set(dic);
+                            });
+
+                        // Style input fields
+                        $("input:text").button().addClass("input-text");
                     }
                 });
             })
@@ -284,7 +317,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Setup tabs
+    $("#tabs").tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
+    $("#tabs li").removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
 
+    // Setup tables
+    /*
+    $("table").jqGrid({
+      heightStyle: "content",
+      shrinkToFit:false,
+      width:250
+    });
+*/
+
+    // Setup custom settings tab
+    $("#custom-settings").accordion({
+      heightStyle: "content"
+    });
 });
 
 

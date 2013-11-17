@@ -4,9 +4,12 @@
     <title>Stat-view Settings</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <link rel="stylesheet" type="text/css" href="../libraries/jquery-ui/css/dot-luv/jquery-ui-1.10.3.custom.min.css" />
+    <link rel="stylesheet" type="text/css" href="../libraries/jquery-ui/css/start/jquery-ui-1.10.3.custom.min.css" />
+    <link rel="stylesheet" type="text/css" href="../libraries/jqGrid/ui.jqgrid.css" />
     <script src="../libraries/jquery-1.9.1.js"></script>
     <script src="../libraries/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
+    <script src="../libraries/jqGrid/jquery.jqGrid.min.js"></script>
+    <script src="../libraries/jqGrid/grid.locale-en.js"></script>
 
     <script src="../domain/common.js"></script>
     <script src="../domain/scraper_list.js"></script>
@@ -15,58 +18,54 @@
     <link rel="stylesheet" type="text/css" href="../css/formatting.css" />
     <style>
         table {
-            width: 40em;
-            margin: 5em auto;
+            width: 55em;
+            margin: 1em auto;
         }
 
         div#content {
             -webkit-column-count: 2;
             -webkit-column-gap: 0;
         }
+
+        .input-text {
+            background: #253244;
+            color: #c6c6c6;
+            cursor: text;
+            text-align: left;
+        }
+
+        .input-text:focus {
+            background: #31445c;
+            color: #ffffff;
+        }
+
+
+        #tabs {
+            margin: 2em auto;
+        }
+
+        .ui-tabs-vertical { width: 77em; }
+        .ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 12em; }
+        .ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
+        .ui-tabs-vertical .ui-tabs-nav li a { display:block; }
+        .ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; border-right-width: 1px; }
+        .ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 62em;}
+
     </style>
 </head>
 <body>
     <header>Settings</header>
-    <div id="content">
-        <table id="externalScrapers">
-            <caption>External Scrapers (Hosted on google drive)</caption>
-            <thead>
-                <tr>
-                    <th>Function Name</th>
-                    <th>Google Drive File ID</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td>
-                        <input type="text" id="newExternalScraperName" />
-                    </td>
-                    <td>
-                        <input type="text" id="newExternalScraperUrl" />
-                    </td>
-                    <td>
-                        <button id="addScraper">Add</button>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">Apps</a></li>
+            <li><a href="#tabs-2">External Scrapers</a></li>
+            <li><a href="#tabs-3">Toggle Scrapers</a></li>
+            <li><a href="#tabs-4">Hidden URIs</a></li>
+            <li><a href="#tabs-5">Toggle Scrapers</a></li>
+        </ul>
 
-        <table id="scraperToggles">
-            <caption>Toggle Scrapers</caption>
-            <thead>
-                <tr>
-                    <th>Scrapper</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-
-        <table id="appIds">
+        <div id="tabs-1">
+            <table id="appIds">
             <caption>App Ids Listed In Dropdown</caption>
             <thead>
                 <tr>
@@ -87,16 +86,73 @@
                 </tr>
             </tfoot>
         </table>
+        </div>
 
-        <table id="hiddenUris">
-            <caption>Hidden URIs</caption>
-            <thead>
-                <tr>
-                    <th>URI</th>
-                    <th>Date Hidden</th>
-                </tr>
-            </thead>
-        </table>
+        <div id="tabs-2">
+            <table id="externalScrapers">
+                <caption>External Scrapers (Hosted on google drive)</caption>
+                <thead>
+                    <tr>
+                        <th>Function Name</th>
+                        <th>Google Drive File ID</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>
+                            <input type="text" id="newExternalScraperName" />
+                        </td>
+                        <td>
+                            <input type="text" id="newExternalScraperUrl" />
+                        </td>
+                        <td>
+                            <button id="addScraper">Add</button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div id="tabs-3">
+            <table id="scraperToggles">
+                <caption>Toggle Scrapers</caption>
+                <thead>
+                    <tr>
+                        <th>Scrapper</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="tabs-4">
+            <table id="hiddenUris">
+                <caption>Hidden URIs</caption>
+                <thead>
+                    <tr>
+                        <th>URI</th>
+                        <th>Date Hidden</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        <div id="tabs-5">
+            <div id="custom-settings">
+            </div>
+        </div>
+
+
+
+
+
+
+
     </div>
 </body>
 </html>
