@@ -146,10 +146,18 @@ function parseLogData() {
         });
 
         function buildUriEntry (cssClass, uri, errorNum, path, latestDate, oldestDate, count) {
+            var splitUri = uri.split("?");
+            var status = "status%3A" + errorNum;
+            var path = "+path%3A" + encodeURIComponent(splitUri[0]).replace(/amp%3B/g, "");
+            var queryString = "";
+            if (splitUri.length == 2) {
+                queryString = "+querystring%3A%5C%3F" + encodeURIComponent(splitUri[1]).replace(/amp%3B/g, "");
+            }
+
             var url = "";
             url += "https://appengine.google.com/logs?";
             url += "filter_type=labels&view=search&severity_level_override=0&severity_level=3";
-            url += "&filter=status%3A" + errorNum + "+path%3A" + uri;
+            url += "&filter=" + status + path + queryString;
             url += "&app_id=" + appId;
 
             var entry = "";
