@@ -27,10 +27,10 @@ function parseCronJobs() {
             var spans = columns[1].getElementsByTagName("span");
             var timing = spans[1].innerHTML;
             var status = spans[2].innerHTML;
-            if (timing.indexOf("on time") == -1) {
+            if (timing.indexOf("on time") === -1) {
                 row.setAttribute("style", "background-color: #ac6f65;")
             }
-            if (status.indexOf("Success") == -1) {
+            if (status.indexOf("Success") === -1) {
                 row.setAttribute("style", "background-color: #ae433a;")
             } else {
                 if (settings.hide_successful_cron_jobs > 0) {

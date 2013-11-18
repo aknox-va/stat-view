@@ -1,5 +1,3 @@
-
-
 // Create the list of all possible sources to grab data from
 function loadScraperList(callback) {
     var internalScrapers = new Array();
@@ -21,16 +19,14 @@ function loadScraperList(callback) {
     }
 
     // Add in the external scrapers
-    chrome.storage.local.get('externalScrapers', function(result) {
-        var externalScrapers = {};
-        if (result && result.externalScrapers) { externalScrapers = result.externalScrapers; }
-
+    getStoredData('externalScrapers', "dictionary", function(externalScrapers) {
         for (var row in externalScrapers) {
-        scrapers[scrapers.length] = externalScrapers[row]
+            if (externalScrapers.hasOwnProperty(row)) {
+                scrapers[scrapers.length] = externalScrapers[row];
+            }
         }
-
         callback(scrapers);
-    });
+    })
 }
 
 
@@ -38,28 +34,22 @@ function loadScraperList(callback) {
 function loadAllowedScraperList(callback) {
     loadScraperList(function(scrapers) {
         // Remove any sources the settings say the user doesn't want
-        chrome.storage.local.get('scraperToggles', function(result) {
-            var scraperToggles = {};
-            if (result && result.scraperToggles) { scraperToggles = result.scraperToggles; }
+        getStoredData('scraperToggles', "dictionary", function(scraperToggles) {
             // Remove unwanted urls
             for (var entry in scrapers) {
                 var scraperName = scrapers[entry].name;
-                if (scraperToggles[scraperName] == "OFF") { delete scrapers[entry]; }
+                if (scraperToggles[scraperName] === "OFF") { delete scrapers[entry]; }
             }
-
             callback(scrapers);
         });
     });
 }
 
-function removeExternalScraper(button) {
-    var scraperUrl = button.value;
-    chrome.storage.local.get('externalScrapers', function(result) {
-        var externalScrapers = {};
-        if (result && result.externalScrapers) { externalScrapers = result.externalScrapers; }
+function removeExternalScraper(scraperUrl) {
+    getStoredData('externalScrapers', "dictionary", function(externalScrapers) {
         // Remove unwanted external scraper from list
         for (var row in externalScrapers) {
-            if (externalScrapers[row].url == scraperUrl) {
+            if (externalScrapers[row].url === scraperUrl) {
                 delete externalScrapers[row];
                 window.location.reload();   // Reload whole page since custom setting may need to be grabbed
             }

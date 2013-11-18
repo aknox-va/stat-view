@@ -9,10 +9,10 @@ function parseLogData() {
                  "#parseLogData #log-count {width: 5%;}" +
                  "#parseLogData tfoot td {text-align: center;}";
     this.settingsDefaults = {
-            minDisplayThreshold:5,
-            frequentLevel:20,
-            overloadLevel:200,
-            maxNumDaysChecked:3
+            min_display_threshold:5,
+            frequent_level:20,
+            overload_level:200,
+            max_num_days_checked:3
         };
 
     this.process = function(doc, settings, callback) {
@@ -150,7 +150,7 @@ function parseLogData() {
             var status = "status%3A" + errorNum;
             var path = "+path%3A" + encodeURIComponent(splitUri[0]).replace(/amp%3B/g, "");
             var queryString = "";
-            if (splitUri.length == 2) {
+            if (splitUri.length === 2) {
                 queryString = "+querystring%3A%5C%3F" + encodeURIComponent(splitUri[1]).replace(/amp%3B/g, "");
             }
 
@@ -197,7 +197,7 @@ function parseLogData() {
                 }
 
                 // Sort the logs into their correct associative arrays
-                if (errorNum.charAt(0) == "5") {
+                if (errorNum.charAt(0) === "5") {
                     if (uri in self.errors500) {
                         self.errors500[uri].count += 1;
                         if (date > self.errors500[uri].latestDate) { self.errors500[uri].latestDate = date; }
@@ -205,7 +205,7 @@ function parseLogData() {
                     } else {
                         self.errors500[uri] = {errorNum:errorNum, latestDate:date, oldestDate:date, count:1}
                     }
-                } else if (errorNum.charAt(0) == "4") {
+                } else if (errorNum.charAt(0) === "4") {
                     if (uri in self.errors400) {
                         self.errors400[uri].count += 1;
                         if (date > self.errors400[uri].date) { self.errors400[uri].date = date; }
@@ -235,8 +235,8 @@ function parseLogData() {
                 xhr.send();
 
                 xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4) {
-                        if (xhr.status == 200) {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
                             processPages(xhr.response, callback);
                         } else {
                             alert ("Error encountered while parsing logs: " + xhr.status + " - " + xhr.statusText);
