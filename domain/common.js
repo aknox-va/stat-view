@@ -16,7 +16,7 @@ var Scraper = function() {
 
     // The default values for any settings needed solely by this scraper. Override This
     this.settingsDefaults = {};
-}
+};
 Scraper.prototype = {
     //
     name: function() { return this.constructor.name; },
@@ -28,15 +28,15 @@ Scraper.prototype = {
     getSettings: function(callback) {
         var self = this;
         var settings = this.settingsDefaults;
+        var settingName = self.name() + 'Settings';
         // get the data from storage if possible. will be keyed to the scraper object name
-        chrome.storage.local.get(self.name() + 'Settings', function(result) {
-            if (result && result[self.name() + 'Settings']) {
-                // Overwrite  default values with any user values
-                for (var setting in result[self.name() + 'Settings']) {
-                    settings[setting] = result[self.name() + 'Settings'][setting];
+        getStoredData(settingName, "dictionary", function(data) {
+            // Overwrite  default values with any user values
+            for (var setting in data[settingName]) {
+                if (data[settingName].hasOwnProperty(setting)) {
+                    settings[setting] = data[settingName][setting];
                 }
             }
-
             callback(settings);
         });
     },
@@ -57,35 +57,19 @@ Scraper.prototype = {
             // Run the scraper with the found settings
             self.process(doc, settings, function(tableContents) {
                 var newContent = document.getElementById(name);                 // Find the table to put data in
-                var placeholder = newContent.getElementsByTagName("caption")[0] // Find the placeholder entry
+                var placeholder = newContent.getElementsByTagName("caption")[0];// Find the placeholder entry
                 removeElement(placeholder);                                     // Remove the placeholder entry
                 newContent.innerHTML = tableContents;                           // Display the new data
                 self.onLoad();
             });
         });
     }
-}
-
-
-// removes the given element from the page
-function removeElement(element) {
-    element && element.parentNode && element.parentNode.removeChild(element);
-}
-
-
-// put the given parsed data into the view table with the given id
-function insertData(scraperName, data, callback) {
-    var newContent = document.getElementById(scraperName);  // Find the table to put data in
-    var placeholder = newContent.getElementsByTagName("caption")[0]
-    removeElement(placeholder);   // Remove the table placeholder
-    newContent.innerHTML = data;
-    if (callback){callback();}
-}
+};
 
 
 //
 function loadScraper(scraperInfo, callback) {
-    var url = "../domain/" + scraperInfo.name + ".js";
+    var url = "../domain/internalScrapers/" + scraperInfo.name + ".js";
     if (scraperInfo.url) { url = scraperInfo.url; }
 
     var head = document.getElementsByTagName('head')[0];
@@ -98,4 +82,34 @@ function loadScraper(scraperInfo, callback) {
         callback(new scraperFunction());
     };
     head.appendChild(script);
+}
+
+
+// removes the given element from the page
+function removeElement(element) {
+    element && element.parentNode && element.parentNode.removeChild(element);
+}
+
+
+//
+function isEmpty(obj) {
+    for(var prop in obj) {
+        if(obj.hasOwnProperty(prop))
+            return false;
+    }
+
+    return true;
+}
+
+
+//
+function getStoredData(dataName, dataType, callback) {
+    chrome.storage.local.get(dataName, function(result) {
+        var data = null;
+        if (dataType === "list") { data = []; }
+        else if (dataType === "dictionary") { data = {}; }
+
+        if (result && result[dataName]) { data = result[dataName]; }
+        callback(data);
+    });
 }

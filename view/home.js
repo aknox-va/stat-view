@@ -4,7 +4,7 @@ var appId = "";
 window.onload = function() {
     // Set the appId
     var urlParam = document.location.href.split("?")[1].split("=");
-    if (urlParam[0] == "appId") {
+    if (urlParam[0] === "appId") {
         appId = urlParam[1];
 
         // Setup the page heading and title
@@ -51,9 +51,3 @@ window.onload = function() {
         }
     }
 };
-
-
-//
-function removeElement(element) {
-    element && element.parentNode && element.parentNode.removeChild(element);
-}

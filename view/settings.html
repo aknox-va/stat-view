@@ -2,123 +2,150 @@
 <html>
 <head>
     <title>Stat-view Settings</title>
-    <script src="../domain/common.js"></script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="../libraries/jquery-ui/css/dot-luv/jquery-ui-1.10.3.custom.min.css" />
+    <link rel="stylesheet" type="text/css" href="../libraries/jqGrid/ui.jqgrid.css" />
+    <script src="../libraries/jquery-1.9.1.js"></script>
+    <script src="../libraries/jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
+    <script src="../libraries/jqGrid/jquery.jqGrid.min.js"></script>
+    <script src="../libraries/jqGrid/grid.locale-en.js"></script>
+
+    <script src="../domain/common.js"></script>
     <script src="../domain/scraper_list.js"></script>
     <script src="settings.js"></script>
-    <link rel="stylesheet" type="text/css" href="../css/styling.css" />
-    <link rel="stylesheet" type="text/css" href="../css/formatting.css" />
     <style>
-        table {
-            width: 40em;
-            margin: 5em auto;
+        html {
+            background-color: #1b2837;
         }
 
-        #addAppIdRow td,
-        td.settingsValueCell,
-        td.buttonCell, {
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            height: 100%;
+            padding: 0;
+            width: 100%;
             text-align: center;
         }
 
-        div#content {
-            -webkit-column-count: 2;
-            -webkit-column-gap: 0;
+        header {
+            background:#0b3e6f url(../libraries/jquery-ui/css/dot-luv/images/ui-bg_diagonals-thick_15_0b3e6f_40x40.png) 50% 50% repeat;
+            border-bottom: solid #151c26 0.5em;
+            color: #cbe1ff;
+            font-family: Arial,sans-serif;
+            font-weight: bold;
+
+            font-size: 2.5em;
+            margin: 0 0 0.5em 0;
+            padding: 0.5em 0;
+            text-align: center;
+            width: 100%;
         }
 
-        input, button {
-            width: 97%;
-            display: block;
-            margin: 0.2em auto;
+        .input-text {
+            background: #253244;
+            color: #c6c6c6;
+            cursor: text;
+            text-align: left;
         }
-        span {
+
+        .input-text:focus {
+            background: #31445c;
+            color: #ffffff;
+        }
+
+        .ui-jqgrid {
+            margin:1em auto;
+        }
+
+        .ui-jqgrid button {
+            width: 95%;
+        }
+
+        div#add-app-id {
+            margin:1em auto;
+            text-align: center;
             width: 100%;
-            display: inline-block;
         }
-        span input {
-            float: right;
-            width: 35em;
-            display:inline-block;
+
+        #scraperToggles button span{
+            font-size: 2.5em;
+            padding: 0;
         }
-        td {
-            padding: 3px;
+
+        div#custom-settings table {
+            margin: 1em auto;
+            text-align: left;
         }
-        .show-dashboard-row {
-            width: 5em;
+        div#custom-settings button {
+            width: 100%;
         }
+        div#custom-settings button:hover,
+        div#custom-settings button:focus {
+            border: 1px solid #222222;
+            background: #00498f url(../libraries/jquery-ui/css/dot-luv/images/ui-bg_dots-small_40_00498f_2x2.png) 50% 50% repeat;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        #tabs>ul>li>a {
+            width: 83%;
+        }
+
+
+        #tabs {
+            margin: 2em auto;
+        }
+
+        .ui-tabs-vertical { width: 77em; }
+        .ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 12em; }
+        .ui-tabs-vertical .ui-tabs-nav li { clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
+        .ui-tabs-vertical .ui-tabs-nav li a { display:block; }
+        .ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; border-right-width: 1px; }
+        .ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 62em;}
+
     </style>
 </head>
 <body>
     <header>Settings</header>
-    <div id="content">
-        <table id="externalScrapers">
-            <caption>External Scrapers (Hosted on google drive)</caption>
-            <thead>
-                <tr>
-                    <th>Function Name</th>
-                    <th>Google Drive File ID</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td>
-                        <input type="text" id="newExternalScraperName" />
-                    </td>
-                    <td>
-                        <input type="text" id="newExternalScraperUrl" />
-                    </td>
-                    <td>
-                        <button id="addScraper">Add</button>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">Apps</a></li>
+            <li><a href="#tabs-2">External Scrapers</a></li>
+            <li><a href="#tabs-3">Toggle Scrapers</a></li>
+            <li><a href="#tabs-4">Hidden URIs</a></li>
+            <li><a href="#custom-settings">Scrapers' Settings</a></li>
+        </ul>
 
-        <table id="scraperToggles">
-            <caption>Toggle Scrapers</caption>
-            <thead>
-                <tr>
-                    <th>Scrapper</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+        <div id="tabs-1">
+            <table id="appIds"></table>
+            <div id="add-app-id">
+                <input type="text" value="" id="addAppName" />
+                <button id="addApp">Add GAE App ID</button>
+            </div>
 
-        <table id="appIds">
-            <caption>App Ids Listed In Dropdown</caption>
-            <thead>
-                <tr>
-                    <th>App Id</th>
-                    <th colspan="3">Operation Buttons</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-            <tfoot>
-                <tr id="addAppIdRow">
-                    <td>
-                        <input type="text" value="" id="addAppName" />
-                    </td>
-                    <td class="buttonCell" colspan='3'>
-                        <button id="addApp">Add GAE App Id</button>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
+        </div>
 
-        <table id="hiddenUris">
-            <caption>Hidden URIs</caption>
-            <thead>
-                <tr>
-                    <th>URI</th>
-                    <th>Date Hidden</th>
-                </tr>
-            </thead>
-        </table>
+        <div id="tabs-2">
+            <table id="externalScrapers"></table>
+            <div id="add-external-scraper">
+                <input type="text" id="newExternalScraperName" value="Scraper Function Name"/>
+                <input type="text" id="newExternalScraperUrl" value="Google Drive File ID"/>
+                <button id="addScraper">Add</button>
+            </div>
+        </div>
+
+        <div id="tabs-3">
+            <table id="scraperToggles"></table>
+        </div>
+
+        <div id="tabs-4">
+            <table id="hiddenUris"></table>
+        </div>
+
+        <div id="custom-settings">
+        </div>
     </div>
 </body>
 </html>

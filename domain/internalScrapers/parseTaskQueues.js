@@ -31,7 +31,7 @@ function parseTaskQueues() {
             removeElement(column[1]);
 
             // Only enabled queues can be successful
-            if (row.className.indexOf("paused") == -1) {
+            if (row.className.indexOf("paused") === -1) {
                 var queuedTasks = parseInt(column[2].innerHTML);
                 var runLastMin = parseInt(column[3].innerHTML);
                 //todo: may have queues that are rarely empty so drill into each queue to check for tasks that keep retrying
