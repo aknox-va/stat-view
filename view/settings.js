@@ -137,7 +137,7 @@ function loadExternalScrapers(scrapers) {
      // Create a jqGrid table to hold the external scraper list
     jQuery("#externalScrapers").jqGrid({
         datatype:"local",
-        colNames:['Scraper Name','Google Drive ID', 'Action'],
+        colNames:['Scraper Name','Google Drive URL', 'Action'],
         colModel:[
             {name:'scraperName',index:'scraperName', width:160, align:"left", sortable:false, resizable:false},
             {name:'id',index:'id', width:399, align:"left", sortable:false, resizable:false},
