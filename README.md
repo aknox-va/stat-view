@@ -47,3 +47,8 @@ Version 2.0.1
 -Increased code robustness
 -Added a message for the user when no dashboard error URIs are currently hidden
 -added analytics
+
+Version 2.0.2
+-when adding app IDs submitting the app ID can by done by pressing enter or the button
+-when an app ID is added the add app id input box gets selected after the addition
+-app IDs are forced to lower case

@@ -72,14 +72,19 @@ function loadApps() {
         getStoredData('appIdList', "list", function(appIdList) {
             var appId = document.getElementById("addAppName").value;
             if (appId.length > 0) {
+                appId = appId.toLowerCase();
                 appIdList.push(appId);
                 setData({appIdList: appIdList}, function() {
                     addAppIdRow(appId);
                     applyAppButtonHandlers();
+                    $("input#addAppName").focus();
                 });
             }
             document.getElementById("addAppName").value = "";
         });
+    });
+    $("input#addAppName").keypress(function (e) {
+        if (e.which == 13) { $("button#addApp").click(); }
     });
 
     // Add button click listeners for the table
