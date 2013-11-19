@@ -1,6 +1,6 @@
 // Create the list of all possible sources to grab data from
 function loadScraperList(callback) {
-    var internalScrapers = new Array();
+    var internalScrapers = [];
 
     // Add the function/file name of any new scraper to the list below
     internalScrapers[internalScrapers.length] = "parseXkcd";
@@ -13,9 +13,11 @@ function loadScraperList(callback) {
     internalScrapers[internalScrapers.length] = "chart7DMemoryUsage";
 
     // Format internal scrapers
-    var scrapers = new Array();
+    var scrapers = [];
     for (var row in internalScrapers) {
-        scrapers[scrapers.length] = {name: internalScrapers[row], url:null}
+        if (internalScrapers.hasOwnProperty(row)) {
+            scrapers[scrapers.length] = {name: internalScrapers[row], url:null};
+        }
     }
 
     // Add in the external scrapers
@@ -37,8 +39,9 @@ function loadAllowedScraperList(callback) {
         getStoredData('scraperToggles', "dictionary", function(scraperToggles) {
             // Remove unwanted urls
             for (var entry in scrapers) {
-                var scraperName = scrapers[entry].name;
-                if (scraperToggles[scraperName] === "OFF") { delete scrapers[entry]; }
+                if (scrapers.hasOwnProperty(entry)) {
+                    if (scraperToggles[scrapers[entry].name] === "OFF") { delete scrapers[entry]; }
+                }
             }
             callback(scrapers);
         });
@@ -49,13 +52,15 @@ function removeExternalScraper(scraperUrl) {
     getStoredData('externalScrapers', "dictionary", function(externalScrapers) {
         // Remove unwanted external scraper from list
         for (var row in externalScrapers) {
-            if (externalScrapers[row].url === scraperUrl) {
-                delete externalScrapers[row];
-                window.location.reload();   // Reload whole page since custom setting may need to be grabbed
+            if (externalScrapers.hasOwnProperty(row)) {
+                if (externalScrapers[row].url === scraperUrl) {
+                    delete externalScrapers[row];
+                    window.location.reload();   // Reload whole page since custom setting may need to be grabbed
+                }
             }
         }
 
         // Save the new list
-        chrome.storage.local.set({externalScrapers: externalScrapers});
+        setData({externalScrapers: externalScrapers});
     });
 }

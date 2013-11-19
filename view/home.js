@@ -17,8 +17,10 @@ window.onload = function() {
 
         function loadScrapers(scrapers) {
             for (var entry in scrapers) {
-                // Pull in the scraping function and load data associated with it once the object is loaded
-                loadScraper(scrapers[entry], runScraper);
+                if (scrapers.hasOwnProperty(entry)) {
+                    // Pull in the scraping function and load data associated with it once the object is loaded
+                    loadScraper(scrapers[entry], runScraper);
+                }
             }
 
             function runScraper (scraper) {

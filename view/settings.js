@@ -22,7 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Style custom settings tab
     $("#custom-settings").accordion({
-      heightStyle: "content"
+        heightStyle: "content",
+        collapsible: true,
+        active: false
     });
 });
 
@@ -61,7 +63,7 @@ function loadApps() {
             var appId = document.getElementById("addAppName").value;
             if (appId.length > 0) {
                 appIdList.push(appId);
-                chrome.storage.local.set({appIdList: appIdList}, function() {
+                setData({appIdList: appIdList}, function() {
                     addAppIdRow(appId);
                     applyAppButtonHandlers();
                 });
@@ -84,7 +86,7 @@ function loadApps() {
             }
 
             // Save the list
-            chrome.storage.local.set({appIdList: appIdList});
+            setData({appIdList: appIdList});
         }
 
         // Move appid up in list
@@ -180,7 +182,7 @@ function loadExternalScrapers(scrapers) {
             if (newScraperName.length > 0 && newScraperUrl.length > 0) {
                 newScraperUrl = "https://googledrive.com/host/" + newScraperUrl;
                 externalScraperList.push({name:newScraperName, url:newScraperUrl});
-                chrome.storage.local.set({externalScrapers: externalScraperList}, function () {
+                setData({externalScrapers: externalScraperList}, function () {
                     window.location.reload();   // Reload whole page since custom setting may need to be grabbed
                 });
             }
@@ -246,7 +248,7 @@ function loadScraperToggles(scrapers) {
                         }
 
                         // Store the changed settings
-                        chrome.storage.local.set({scraperToggles: scraperToggles}, function() {
+                        setData({scraperToggles: scraperToggles}, function() {
                             // Display the setting change
                             $(self).button('option', 'label', displayText);
                         });
@@ -291,8 +293,14 @@ function loadHiddenUris() {
                 addHiddenUri(uriList[j].uri, new Date(uriList[j].time).toDateString());
             }
         }
+
+        // Remove the no URI message if there are any URIs
+        if (uriList.length > 0) {
+            removeElement(document.getElementById("hiddenUrisNoUrisMessage"));
+        }
+
         // Update the storage in case entries were removed
-        chrome.storage.local.set({hiddenUriList: uriList});
+        setData({hiddenUriList: uriList});
 
         // Add the button click listeners
         $("button.show-dashboard-row").button().click(function() {
@@ -300,16 +308,19 @@ function loadHiddenUris() {
             var uri = self.value;
             getStoredData('hiddenUriList', "list", function(uriList) {
                 for (var entry in uriList) {
-                    if (uriList[entry]['uri'] === self.value) { delete uriList[entry] }
+                    if (uriList.hasOwnProperty(entry)) {
+                        if (uriList[entry]['uri'] === self.value) { delete uriList[entry] }
+                    }
                 }
                 // Save the updated list
-                chrome.storage.local.set({hiddenUriList: uriList});
+                setData({hiddenUriList: uriList});
             });
 
             // Remove the row from the page
             removeElement(self.parentNode.parentNode);
         });
     });
+
 
     // Displays the given hidden URI in the hidden URI table with a new row
     function addHiddenUri(uri, dateHidden) {
@@ -327,6 +338,7 @@ function loadHiddenUris() {
 // Loads tab data for settings defined in a scraper
 ////////////////////////////////////////////////////
 function loadCustomSettings(scrapers) {
+
     // Add tables for all the scrapers' custom settings
     for (var entry in scrapers) {
         if (scrapers.hasOwnProperty(entry)) {
@@ -338,8 +350,10 @@ function loadCustomSettings(scrapers) {
                     var customSettingsTable = document.createElement("table");
                     customSettingsTable.setAttribute("id", scraper.name() + "Settings");
                     for (var setting in settings) {
-                        customSettingsTable.innerHTML += "<tr><td>" + setting.replace(/_/g, " ") + "</td><td><input type='text' name='" + setting + "' value='" + settings[setting] + "' class='" + scraper.name() + "Setting' /></td></tr>";
-                        hasValue = true;
+                        if (settings.hasOwnProperty(setting)) {
+                            customSettingsTable.innerHTML += "<tr><td>" + setting.replace(/_/g, " ") + "</td><td><input type='text' name='" + setting + "' value='" + settings[setting] + "' class='" + scraper.name() + "Setting' /></td></tr>";
+                            hasValue = true;
+                        }
                     }
 
                     if (hasValue) {
@@ -356,8 +370,9 @@ function loadCustomSettings(scrapers) {
                                 }
                             }
                             var dic = {};
-                            dic[scraper.name()+"Settings"] = newSettings;
-                            chrome.storage.local.set(dic, function () {
+                            var dicKey = scraper.name()+"Settings";
+                            dic[dicKey] = newSettings;
+                            setData(dic, function () {
                                 setTimeout(function() { $("#custom-settings button#save-" + scraper.name()).blur();}, 2000);
                             });
                         });

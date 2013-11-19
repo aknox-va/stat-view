@@ -5,6 +5,6 @@ function chart7DMemoryUsage() {
     this.captionText = "7 Day Memory Usage Chart (MB)";
 
     this.process = function (doc, settings, callback) {
-        callback("<caption>" + this.captionText + "</caption><img src='" + JSON.parse(doc).chart_url + "' />");
+        callback("<caption>" + this.captionText + "</caption><img src='" + JSON.parse(doc)['chart_url'] + "' />");
     }
 }
