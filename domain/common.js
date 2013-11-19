@@ -1,3 +1,5 @@
+var ANALYTICS_CODE = "UA-45851540-1";
+
 // adds the ParentClass properties to the ChildClass object
 function extend(ChildClass, ParentClass) {
     ChildClass.prototype = new ParentClass();
@@ -29,12 +31,13 @@ Scraper.prototype = {
         var self = this;
         var settings = this.settingsDefaults;
         var settingName = self.name() + 'Settings';
+
         // get the data from storage if possible. will be keyed to the scraper object name
         getStoredData(settingName, "dictionary", function(data) {
             // Overwrite  default values with any user values
-            for (var setting in data[settingName]) {
-                if (data[settingName].hasOwnProperty(setting)) {
-                    settings[setting] = data[settingName][setting];
+            for (var setting in data) {
+                if (data.hasOwnProperty(setting)) {
+                    settings[setting] = data[setting];
                 }
             }
             callback(settings);
@@ -97,7 +100,6 @@ function isEmpty(obj) {
         if(obj.hasOwnProperty(prop))
             return false;
     }
-
     return true;
 }
 
@@ -112,4 +114,10 @@ function getStoredData(dataName, dataType, callback) {
         if (result && result[dataName]) { data = result[dataName]; }
         callback(data);
     });
+}
+
+
+//
+function setData(data, callback) {
+    chrome.storage.local.set(data, callback);
 }

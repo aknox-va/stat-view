@@ -40,3 +40,10 @@ function <name listed in scraper_list>() {
     return this;
 }
 
+Version 2.0.1
+-Fixed a url encoding issue in dashboard errors scraper uri links
+-Added visual customization to dashboard errors scraper
+-Cleaned up minor code syntax issues
+-Increased code robustness
+-Added a message for the user when no dashboard error URIs are currently hidden
+-added analytics

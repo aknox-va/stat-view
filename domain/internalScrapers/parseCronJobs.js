@@ -1,11 +1,11 @@
 //
 function parseCronJobs() {
-    this.url = function(appId) { return "https://appengine.google.com/cron?app_id=s~" + appId; }
+    this.url = function(appId) { return "https://appengine.google.com/cron?app_id=s~" + appId; };
     this.captionText = "Cron Jobs (First page only)";
     this.style = "#parseCronJobs #cron-name {width: 65%;}" +
                  "#parseCronJobs #cron-state {width: 35%;}";
     this.settingsDefaults = {
-            hide_successful_cron_jobs:0
+            if_true_hide_successful_cron_jobs:0
         };
 
     this.process = function(doc, settings, callback) {
@@ -33,7 +33,7 @@ function parseCronJobs() {
             if (status.indexOf("Success") === -1) {
                 row.setAttribute("style", "background-color: #ae433a;")
             } else {
-                if (settings.hide_successful_cron_jobs > 0) {
+                if (settings.if_true_hide_successful_cron_jobs > 0) {
                     removeElement(row);
                 }
             }

@@ -1,7 +1,12 @@
 //
 function parseDashboardErrors() {
-    this.url = function(appId) { return "https://appengine.google.com/dashboard?app_id=s~" + appId; }
+    this.url = function(appId) { return "https://appengine.google.com/dashboard?app_id=s~" + appId; };
     this.captionText = 'Dashboard Error List';
+    this.settingsDefaults = {
+            critical_if_error_count_above:10,
+            critical_if_failure_rate_above:25,
+            if_true_show_only_critical_errors:0
+        };
     this.style = "#parseDashboardErrors #db-errors-uri {width: 87%;}" +
                  "#parseDashboardErrors #db-errors-count {width: 5%;}" +
                  "#parseDashboardErrors #db-errors-pc-error {width: 8%;}" +
@@ -47,19 +52,28 @@ function parseDashboardErrors() {
                     appId = argument[1];
                 }
             }
-            link.href = "https://appengine.google.com/logs?filter_type=regex&severity_level_override=1&view=search&app_id=" + appId + "&filter=" + link.innerHTML;
-            link.target = "_BLANK";
+            link.href = "https://appengine.google.com/logs?filter_type=regex&severity_level_override=0&severity_level=3&view=search&app_id=" + appId + "&filter=" + encodeURIComponent(link.innerHTML);
+            //link.target = "_BLANK";
 
             // Add a 'hide error for 1 week' button to each row
             column[0].innerHTML = '<button class="hide-dashboard-row" value="' + link.innerHTML + '">Hide</button> ' + link.outerHTML;
 
+            var errorCount = parseInt(column[1].innerHTML);
+            var errorRate = parseFloat(column[2].innerHTML);
+            if (errorCount > settings.critical_if_error_count_above || errorRate > settings.critical_if_failure_rate_above) {
+                row.setAttribute("style", "background-color: #ae433a;");
+            } else {
+                if (settings.if_true_show_only_critical_errors > 0) {
+                    removeElement(row);
+                }
+            }
         }
 
         callback(table.innerHTML);
-    }
+    };
 
     this.onLoad = function () {
-        var buttons = document.querySelectorAll('.hide-dashboard-row')
+        var buttons = document.querySelectorAll('.hide-dashboard-row');
         getStoredData('hiddenUriList', 'list', function(uriList) {
             for (var i = buttons.length; i-- > 0;) {
                 var hid = false;
@@ -70,7 +84,7 @@ function parseDashboardErrors() {
                         if (new Date().getTime() - uriList[j].time > 604800000) {
                             uriList.remove(j);
                             // Update the storage
-                            chrome.storage.local.set({hiddenUriList: uriList});
+                            setData({hiddenUriList: uriList});
                         // Remove the row if the entry is less than a week old
                         } else {
                             removeElement(buttons[i].parentNode.parentNode);
@@ -89,7 +103,7 @@ function parseDashboardErrors() {
                                 getStoredData('hiddenUriList', 'list', function(uriList) {
                                     uriList.push({uri: uri, time: time});
 
-                                    chrome.storage.local.set({hiddenUriList: uriList}, function() {
+                                    setData({hiddenUriList: uriList}, function() {
                                         // Remove the row from the page
                                         removeElement(button.parentNode.parentNode);
                                         alert("the uri will be hidden for 7 days");

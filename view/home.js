@@ -1,3 +1,13 @@
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', ANALYTICS_CODE]);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = 'https://ssl.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+
 var appId = "";
 
 // Setup the page and spool up the data gathering
@@ -17,8 +27,10 @@ window.onload = function() {
 
         function loadScrapers(scrapers) {
             for (var entry in scrapers) {
-                // Pull in the scraping function and load data associated with it once the object is loaded
-                loadScraper(scrapers[entry], runScraper);
+                if (scrapers.hasOwnProperty(entry)) {
+                    // Pull in the scraping function and load data associated with it once the object is loaded
+                    loadScraper(scrapers[entry], runScraper);
+                }
             }
 
             function runScraper (scraper) {
