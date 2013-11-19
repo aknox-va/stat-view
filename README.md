@@ -46,3 +46,4 @@ Version 2.0.1
 -Cleaned up minor code syntax issues
 -Increased code robustness
 -Added a message for the user when no dashboard error URIs are currently hidden
+-added analytics

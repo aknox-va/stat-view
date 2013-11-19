@@ -1,3 +1,5 @@
+var ANALYTICS_CODE = "UA-45851540-1";
+
 // adds the ParentClass properties to the ChildClass object
 function extend(ChildClass, ParentClass) {
     ChildClass.prototype = new ParentClass();
