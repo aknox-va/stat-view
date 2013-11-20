@@ -45,6 +45,7 @@ window.onload = function() {
                 document.getElementById("content").appendChild(newTable);
 
                 // get DOM for the url and process it using the provided function
+                console.log("get:" + scraper.url(appId));
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", scraper.url(appId), true);
                 xhr.onload = function(){scraper.display(this.response)};

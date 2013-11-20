@@ -181,11 +181,15 @@ function parseLogData() {
             var numEntries = entries.length;
 
             // Parse each entry on this page and store it appropriately
+            var oldestDateTime = new Date();
             for (var i = 0; i < numEntries; i++) {
                 var spans = entries[i].getElementsByTagName("span");
                 var date = new Date(spans[0].innerHTML);
                 var uri = spans[1].innerHTML;
                 var errorNum = spans[2].innerHTML;
+                if (oldestDateTime - date > 0) {
+                    oldestDateTime = date;
+                }
 
                 // Skip the log entry if it is too old and finish grabbing logs
                 if (date < self.oldestAllowedDate) {
@@ -229,6 +233,14 @@ function parseLogData() {
 
             // More logs available on other pages so process the next page
             if (nextUrl) {
+                // URI is too long so start a new search by date
+                if (nextUrl.length > 1500) {
+                    alert(oldestDateTime.toString());
+                    var date = oldestDateTime.getFullYear() + "-" + String(Number(oldestDateTime.getMonth())+1) + "-" + oldestDateTime.getDate();
+                    var time = oldestDateTime.getHours() + "%3A" + oldestDateTime.getMinutes() + "%3A" + oldestDateTime.getSeconds();
+                    nextUrl = self.url(appId) + "&date_type=datetime&date=" + date + "&time=" + time;
+                }
+                console.log("get:" + nextUrl);
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", nextUrl, true);
                 xhr.responseType = "document";

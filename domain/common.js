@@ -74,7 +74,6 @@ Scraper.prototype = {
 function loadScraper(scraperInfo, callback) {
     var url = "../domain/internalScrapers/" + scraperInfo.name + ".js";
     if (scraperInfo.url) { url = scraperInfo.url; }
-
     var head = document.getElementsByTagName('head')[0];
     var script = document.createElement('script');
     script.src = url;

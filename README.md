@@ -52,3 +52,4 @@ Version 2.0.2
 -when adding app IDs submitting the app ID can by done by pressing enter or the button
 -when an app ID is added the add app id input box gets selected after the addition
 -app IDs are forced to lower case
+-logs scraper is no longer inhibited by 414 url too long errors
