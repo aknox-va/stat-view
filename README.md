@@ -53,3 +53,6 @@ Version 2.0.2
 -when an app ID is added the add app id input box gets selected after the addition
 -app IDs are forced to lower case
 -logs scraper is no longer inhibited by 414 url too long errors
+
+Version 2.0.3
+-Removed an annoying popup
