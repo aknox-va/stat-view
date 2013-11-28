@@ -235,7 +235,6 @@ function parseLogData() {
             if (nextUrl) {
                 // URI is too long so start a new search by date
                 if (nextUrl.length > 1500) {
-                    alert(oldestDateTime.toString());
                     var date = oldestDateTime.getFullYear() + "-" + String(Number(oldestDateTime.getMonth())+1) + "-" + oldestDateTime.getDate();
                     var time = oldestDateTime.getHours() + "%3A" + oldestDateTime.getMinutes() + "%3A" + oldestDateTime.getSeconds();
                     nextUrl = self.url(appId) + "&date_type=datetime&date=" + date + "&time=" + time;
