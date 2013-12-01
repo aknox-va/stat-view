@@ -106,7 +106,6 @@ function parseDashboardErrors() {
                                     setData({hiddenUriList: uriList}, function() {
                                         // Remove the row from the page
                                         removeElement(button.parentNode.parentNode);
-                                        alert("the uri will be hidden for 7 days");
                                     });
                                 });
                             }
