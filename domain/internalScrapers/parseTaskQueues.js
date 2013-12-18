@@ -11,7 +11,7 @@ function parseTaskQueues() {
     this.process = function (doc, settings, callback) {
         // Get the operations table
         var table = doc.getElementById("ae-tasks-queue-table");
-        table.getElementsByTagName("caption")[0].innerHTML = "<a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a>";
+        table.getElementsByTagName("caption")[0].innerHTML = "<a href='" + doc.URL + "' target='_blank'>" + this.captionText + "</a>";
         var rows = table.getElementsByTagName("tr");
         var thColumns = rows[0].getElementsByTagName("th");
         removeElement(thColumns[1]);

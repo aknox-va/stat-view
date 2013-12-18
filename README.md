@@ -30,7 +30,7 @@ function <name listed in scraper_list>() {
         var result = <parsed and formatted data to place in the scraper's table>;
 
         // Return the html code to output to the table through a callback
-        callback("<caption><a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a></caption>" + result);
+        callback("<caption><a href='" + doc.URL + "' target='_blank'>" + this.captionText + "</a></caption>" + result);
     }
 
     this.onLoad = function () {
@@ -56,3 +56,7 @@ Version 2.0.2
 
 Version 2.0.3
 -Removed an annoying popup
+
+Version 2.0.4
+-grabbing both dashboard error tables and differentiating between 400 and 500 errors
+-fixed dashboard error opening in same window error

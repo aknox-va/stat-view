@@ -39,6 +39,6 @@ function parseCronJobs() {
             }
         }
 
-        callback("<caption><a href='" + doc.URL + "' target='_BLANK'>" + this.captionText + "</a></caption>" + table.innerHTML);
+        callback("<caption><a href='" + doc.URL + "' target='_blank'>" + this.captionText + "</a></caption>" + table.innerHTML);
     }
 }

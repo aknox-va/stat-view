@@ -41,7 +41,7 @@ window.onload = function() {
                 // Add the empty display table to the display window
                 var newTable = document.createElement("table");
                 newTable.setAttribute('id', scraper.name());
-                newTable.innerHTML = "<caption><a href='" + scraper.url(appId) + "' target='_BLANK'>" + scraper.captionText + "</a></caption><thead class='noData'><tr><th>No data available yet. Click heading for manual check</th></tr></thead>";
+                newTable.innerHTML = "<caption><a href='" + scraper.url(appId) + "' target='_blank'>" + scraper.captionText + "</a></caption><thead class='noData'><tr><th>No data available yet. Click heading for manual check</th></tr></thead>";
                 document.getElementById("content").appendChild(newTable);
 
                 // get DOM for the url and process it using the provided function

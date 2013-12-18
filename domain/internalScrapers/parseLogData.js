@@ -162,7 +162,7 @@ function parseLogData() {
 
             var entry = "";
             entry += "<tr class='" + cssClass + "'>";
-            entry += "<td><a href='" + url + "' target='_BLANK'>" + uri + "</a></td>";
+            entry += "<td><a href='" + url + "' target='_blank'>" + uri + "</a></td>";
             entry += "<td>" + errorNum + "</td>";
             entry += "<td>" + latestDate.toLocaleString() + "</td>";
             entry += "<td>" + oldestDate.toLocaleString() + "</td>" ;
