@@ -63,6 +63,8 @@ Scraper.prototype = {
                 var placeholder = newContent.getElementsByTagName("caption")[0];// Find the placeholder entry
                 removeElement(placeholder);                                     // Remove the placeholder entry
                 newContent.innerHTML = tableContents;                           // Display the new data
+                var elements = getAllElementsWithAttribute('href', '#tabs-' + name);    // Update the tab color so the user knows the tab is loaded
+                elements[0].style.color = "#75abff";
                 self.onLoad();
             });
         });
@@ -119,4 +121,19 @@ function getStoredData(dataName, dataType, callback) {
 //
 function setData(data, callback) {
     chrome.storage.local.set(data, callback);
+}
+
+
+//
+function getAllElementsWithAttribute(attribute, value) {
+    var matchingElements = [];
+    var allElements = document.getElementsByTagName('*');
+    for (var i = 0; i < allElements.length; i++) {
+        var attributeValue = allElements[i].getAttribute(attribute);
+        if (attributeValue && attributeValue === value) {
+            // Element exists with attribute. Add to array.
+            matchingElements.push(allElements[i]);
+        }
+    }
+    return matchingElements;
 }

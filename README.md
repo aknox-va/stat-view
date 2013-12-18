@@ -61,3 +61,4 @@ Version 2.0.4
 -grabbing both dashboard error tables and differentiating between 400 and 500 errors
 -fixed dashboard error opening in same window error
 -fixed datastore admin scraper
+-did first half of the ui update

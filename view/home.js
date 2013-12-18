@@ -26,15 +26,16 @@ window.onload = function() {
         loadAllowedScraperList(loadScrapers);
 
         function loadScrapers(scrapers) {
+            var numScrapersToLoad = 0;
             for (var entry in scrapers) {
                 if (scrapers.hasOwnProperty(entry)) {
                     // Pull in the scraping function and load data associated with it once the object is loaded
+                    numScrapersToLoad++;
                     loadScraper(scrapers[entry], runScraper);
                 }
             }
 
             function runScraper (scraper) {
-
                 // Load the style now that we have the scraper
                 loadStyle(scraper.style);
 
@@ -42,7 +43,8 @@ window.onload = function() {
                 var newTable = document.createElement("table");
                 newTable.setAttribute('id', scraper.name());
                 newTable.innerHTML = "<caption><a href='" + scraper.url(appId) + "' target='_blank'>" + scraper.captionText + "</a></caption><thead class='noData'><tr><th>No data available yet. Click heading for manual check</th></tr></thead>";
-                document.getElementById("content").appendChild(newTable);
+                document.getElementById("tab-links").innerHTML += '<li><a href="#tabs-' + scraper.name() + '" style="color: #FFFFFF;">' + scraper.name() + '</a></li>';
+                document.getElementById("tabs").innerHTML += '<div id="tabs-' + scraper.name() + '">' + newTable.outerHTML + '</div>';
 
                 // get DOM for the url and process it using the provided function
                 console.log("get:" + scraper.url(appId));
@@ -52,6 +54,12 @@ window.onload = function() {
                 xhr.responseType = scraper.scrapeType;
                 xhr.send();
 
+                // Try to style tabs
+                numScrapersToLoad--;
+                if (numScrapersToLoad === 0) {
+                    $("#tabs").tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
+                    $("#tabs li").removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
+                }
             }
 
             // Loads the styling specific to the scraper table into the document head
