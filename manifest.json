@@ -1,6 +1,6 @@
 {
   "name" : "Stat View",
-  "version" : "2.0.4",
+  "version" : "2.0.5",
   "description" : "View important app engine admin stats",
   "permissions": [
       "tabs",
