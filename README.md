@@ -62,3 +62,6 @@ Version 2.0.4
 -fixed dashboard error opening in same window error
 -fixed datastore admin scraper
 -did first half of the ui update
+
+Version 2.0.5
+-added a scraper to review pull task queues

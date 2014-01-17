@@ -1,7 +1,7 @@
 //
-function parseTaskQueues() {
+function parsePushTaskQueues() {
     this.url = function(appId) { return "https://appengine.google.com/queues?app_id=s~" + appId; };
-    this.captionText = "Stuck Task Queues";
+    this.captionText = "Stuck Push Task Queues";
     this.settingsDefaults = {
             if_true_hide_successful_task_queues:0,
             highlight_if_queued_tasks_greater_than:0,

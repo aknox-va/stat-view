@@ -6,7 +6,8 @@ function loadScraperList(callback) {
     internalScrapers[internalScrapers.length] = "parseXkcd";
     internalScrapers[internalScrapers.length] = "parseDatastoreAdmin";
     internalScrapers[internalScrapers.length] = "parseCronJobs";
-    internalScrapers[internalScrapers.length] = "parseTaskQueues";
+    internalScrapers[internalScrapers.length] = "parsePushTaskQueues";
+    internalScrapers[internalScrapers.length] = "parsePullTaskQueues";
     internalScrapers[internalScrapers.length] = "parseDashboardErrors";
     internalScrapers[internalScrapers.length] = "parseLogData";
     internalScrapers[internalScrapers.length] = "chart7DErrorDetails";
